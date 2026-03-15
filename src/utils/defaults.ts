@@ -1,0 +1,49 @@
+import type { WizardState } from '../types';
+
+export const DEFAULT_STATE: WizardState = {
+  step: 0,
+  advancedMode: false,
+  selectedApps: [],
+  os: 'linux',
+  basePath: '/data',
+  puid: '1000',
+  pgid: '1000',
+  timezone: 'America/New_York',
+  networkName: 'media-stack',
+  customPaths: {},
+  includeVpnCompose: false,
+};
+
+export const STARTER_APPS = ['sonarr', 'radarr', 'prowlarr', 'qbittorrent', 'plex'];
+
+export const TIMEZONES = [
+  'America/New_York',
+  'America/Chicago',
+  'America/Denver',
+  'America/Los_Angeles',
+  'America/Anchorage',
+  'America/Phoenix',
+  'Pacific/Honolulu',
+  'America/Toronto',
+  'America/Vancouver',
+  'Europe/London',
+  'Europe/Paris',
+  'Europe/Berlin',
+  'Europe/Amsterdam',
+  'Europe/Stockholm',
+  'Europe/Helsinki',
+  'Europe/Moscow',
+  'Asia/Tokyo',
+  'Asia/Shanghai',
+  'Asia/Kolkata',
+  'Asia/Singapore',
+  'Asia/Dubai',
+  'Australia/Sydney',
+  'Australia/Melbourne',
+  'Australia/Perth',
+  'Pacific/Auckland',
+  'Africa/Johannesburg',
+  'America/Sao_Paulo',
+  'America/Mexico_City',
+  'UTC',
+];
