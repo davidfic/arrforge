@@ -78,19 +78,5 @@ export function generateSetupTasks(selectedApps: string[]): SetupTask[] {
     });
   }
 
-  // Step 5: Media server library paths
-  const mediaServers = selectedApps.filter((id) => ['plex', 'jellyfin', 'emby'].includes(id));
-  for (const serverId of mediaServers) {
-    const app = getAppById(serverId);
-    if (!app) continue;
-    tasks.push({
-      id: `media-paths-${serverId}`,
-      title: `Add media libraries in ${app.name}`,
-      description: `In ${app.name}, add your media library paths: /data/media/movies, /data/media/tv, /data/media/music, etc.`,
-      docUrl: app.docUrl,
-      order: order++,
-    });
-  }
-
   return tasks.sort((a, b) => a.order - b.order);
 }

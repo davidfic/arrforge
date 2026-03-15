@@ -32,13 +32,13 @@ export function SettingsForm({ state, dispatch }: SettingsFormProps) {
         </div>
         <button
           onClick={() => dispatch({ type: 'TOGGLE_VPN' })}
-          className={`w-10 h-5 rounded-full relative transition-colors ${
+          className={`w-10 h-5 rounded-full relative flex-shrink-0 transition-colors ${
             state.includeVpnCompose ? 'bg-purple-600' : 'bg-gray-300 dark:bg-gray-600'
           }`}
         >
           <span
-            className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
-              state.includeVpnCompose ? 'translate-x-5' : 'translate-x-0.5'
+            className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+              state.includeVpnCompose ? 'translate-x-5' : 'translate-x-0'
             }`}
           />
         </button>
