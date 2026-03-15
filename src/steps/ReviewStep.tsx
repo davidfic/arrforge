@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import type { WizardState, WizardAction } from '../types';
 import { getAppById } from '../data/apps';
 import { ComposePreview } from '../components/ComposePreview';
@@ -10,41 +10,31 @@ interface ReviewStepProps {
   onReset: () => void;
 }
 
-function downloadBlob(blob: Blob, filename: string) {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
 export function ReviewStep({ state, dispatch, onReset }: ReviewStepProps) {
-  // Pre-generate the ZIP blob so the click handler is fully synchronous.
-  // Async handlers lose the user gesture, causing Chromium/Brave to silently
-  // block the download.
-  const [zipBlob, setZipBlob] = useState<Blob | null>(null);
+  // Pre-generate blob URLs so download links are real <a> elements the user
+  // physically clicks. Brave blocks programmatic a.click() — only a real
+  // pointer event on a real DOM element triggers the download.
+
+  const composeUrl = useMemo(() => {
+    const blob = buildComposeBlob(state);
+    return URL.createObjectURL(blob);
+  }, [state]);
+
+  const [zipUrl, setZipUrl] = useState<string | null>(null);
 
   useEffect(() => {
     let stale = false;
-    setZipBlob(null);
     buildZipBlob(state).then((blob) => {
-      if (!stale) setZipBlob(blob);
+      if (!stale) setZipUrl(URL.createObjectURL(blob));
     });
-    return () => { stale = true; };
+    return () => {
+      stale = true;
+      setZipUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return null;
+      });
+    };
   }, [state]);
-
-  const handleDownloadZip = () => {
-    if (!zipBlob) return;
-    downloadBlob(zipBlob, 'media-stack.zip');
-  };
-
-  const handleDownloadCompose = () => {
-    const blob = buildComposeBlob(state);
-    downloadBlob(blob, 'docker-compose.yml');
-  };
 
   return (
     <div>
@@ -80,22 +70,29 @@ export function ReviewStep({ state, dispatch, onReset }: ReviewStepProps) {
       {/* File preview */}
       <ComposePreview state={state} />
 
-      {/* Download buttons */}
+      {/* Download links — real <a> elements, no programmatic clicks */}
       <div className="flex flex-wrap gap-3 mt-6">
-        <button
-          onClick={handleDownloadZip}
-          disabled={!zipBlob}
-          className={`px-6 py-2.5 rounded-lg text-sm font-medium ${!zipBlob ? 'bg-purple-800 text-purple-400' : 'bg-purple-600 text-white hover:bg-purple-500'} transition-colors inline-block`}
-        >
-          {!zipBlob ? 'Preparing...' : 'Download ZIP'}
-        </button>
+        {zipUrl ? (
+          <a
+            href={zipUrl}
+            download="media-stack.zip"
+            className="px-6 py-2.5 rounded-lg text-sm font-medium bg-purple-600 text-white hover:bg-purple-500 transition-colors inline-block cursor-pointer"
+          >
+            Download ZIP
+          </a>
+        ) : (
+          <span className="px-6 py-2.5 rounded-lg text-sm font-medium bg-purple-800 text-purple-400 inline-block">
+            Preparing ZIP...
+          </span>
+        )}
 
-        <button
-          onClick={handleDownloadCompose}
-          className="px-6 py-2.5 rounded-lg text-sm font-medium bg-gray-800 text-gray-300 hover:bg-gray-700 transition-colors border border-gray-700 inline-block"
+        <a
+          href={composeUrl}
+          download="docker-compose.yml"
+          className="px-6 py-2.5 rounded-lg text-sm font-medium bg-gray-800 text-gray-300 hover:bg-gray-700 transition-colors border border-gray-700 inline-block cursor-pointer"
         >
           Download docker-compose.yml only
-        </button>
+        </a>
       </div>
 
       <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-800">
