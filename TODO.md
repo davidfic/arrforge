@@ -1,10 +1,14 @@
-# ArrForge — V2 Backlog
+# ArrForge — Backlog
 
-- [ ] Auto-configure inter-app connections (Sonarr knows about qBittorrent, Prowlarr, etc.)
+## Done
+- [x] Auto-configure inter-app connections
+- [x] Per-app config (container names, image tags, custom env vars)
+- [x] Import/export configurations
+- [x] Guided post-setup wizard
+- [x] Dark/light theme toggle
+
+## Remaining
 - [ ] Windows OS support
-- [ ] Per-app config (container names, image tags, custom env vars)
 - [ ] User accounts + shareable configurations
-- [ ] Import/export configurations
-- [ ] Guided post-setup wizard ("now configure Sonarr to use qBittorrent")
 - [ ] Hardware transcoding auto-detection
-- [ ] Dark/light theme toggle
+- [ ] HTTPS cert for arrforge.com (pending GitHub provisioning)

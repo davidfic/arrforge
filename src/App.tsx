@@ -35,6 +35,7 @@ export default function App() {
   return (
     <Layout
       currentStep={state.step}
+      maxStep={state.maxStep}
       advancedMode={state.advancedMode}
       onStepClick={handleStepClick}
       onToggleAdvanced={() => dispatch({ type: 'TOGGLE_ADVANCED' })}

@@ -6,13 +6,14 @@ import type { ThemePreference } from '../hooks/useTheme';
 interface LayoutProps {
   children: React.ReactNode;
   currentStep: number;
+  maxStep: number;
   advancedMode: boolean;
   onStepClick: (step: number) => void;
   onToggleAdvanced: () => void;
   theme: { preference: ThemePreference; resolved: 'light' | 'dark'; cycle: () => void };
 }
 
-export function Layout({ children, currentStep, advancedMode, onStepClick, onToggleAdvanced, theme }: LayoutProps) {
+export function Layout({ children, currentStep, maxStep, advancedMode, onStepClick, onToggleAdvanced, theme }: LayoutProps) {
   return (
     <div className="min-h-screen flex flex-col">
       <header className="border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur-sm sticky top-0 z-40">
@@ -24,7 +25,7 @@ export function Layout({ children, currentStep, advancedMode, onStepClick, onTog
             <span className="text-purple-500 dark:text-purple-400">&#9881;</span>
             ArrForge
           </button>
-          <StepIndicator currentStep={currentStep} onStepClick={onStepClick} />
+          <StepIndicator currentStep={currentStep} maxStep={maxStep} onStepClick={onStepClick} />
           <div className="flex items-center gap-2">
             <ThemeToggle preference={theme.preference} resolved={theme.resolved} onCycle={theme.cycle} />
             <AdvancedToggle enabled={advancedMode} onToggle={onToggleAdvanced} />

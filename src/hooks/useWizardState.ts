@@ -28,7 +28,7 @@ function saveState(state: WizardState) {
 function reducer(state: WizardState, action: WizardAction): WizardState {
   switch (action.type) {
     case 'SET_STEP':
-      return { ...state, step: action.step };
+      return { ...state, step: action.step, maxStep: Math.max(state.maxStep, action.step) };
     case 'TOGGLE_ADVANCED':
       return { ...state, advancedMode: !state.advancedMode };
     case 'TOGGLE_APP': {

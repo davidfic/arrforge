@@ -2,16 +2,17 @@ const STEPS = ['Welcome', 'Select Apps', 'Configure', 'Review', 'Setup Guide'];
 
 interface StepIndicatorProps {
   currentStep: number;
+  maxStep: number;
   onStepClick: (step: number) => void;
 }
 
-export function StepIndicator({ currentStep, onStepClick }: StepIndicatorProps) {
+export function StepIndicator({ currentStep, maxStep, onStepClick }: StepIndicatorProps) {
   return (
     <nav className="flex items-center justify-center gap-1 sm:gap-2">
       {STEPS.map((label, i) => {
         const isComplete = i < currentStep;
         const isCurrent = i === currentStep;
-        const isClickable = i < currentStep;
+        const isClickable = i !== currentStep && i <= maxStep;
 
         return (
           <div key={label} className="flex items-center">
@@ -21,7 +22,7 @@ export function StepIndicator({ currentStep, onStepClick }: StepIndicatorProps) 
               className={`flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm transition-colors ${
                 isCurrent
                   ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-700'
-                  : isComplete
+                  : isClickable
                     ? 'text-purple-600 dark:text-purple-400 hover:text-purple-500 dark:hover:text-purple-300 cursor-pointer'
                     : 'text-gray-400 dark:text-gray-600 cursor-default'
               }`}
@@ -30,7 +31,7 @@ export function StepIndicator({ currentStep, onStepClick }: StepIndicatorProps) 
                 className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-medium ${
                   isCurrent
                     ? 'bg-purple-600 text-white'
-                    : isComplete
+                    : isClickable
                       ? 'bg-purple-200 dark:bg-purple-800 text-purple-700 dark:text-purple-300'
                       : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500'
                 }`}
@@ -40,7 +41,7 @@ export function StepIndicator({ currentStep, onStepClick }: StepIndicatorProps) 
               <span className="hidden sm:inline">{label}</span>
             </button>
             {i < STEPS.length - 1 && (
-              <span className={`mx-1 text-xs ${i < currentStep ? 'text-purple-400 dark:text-purple-700' : 'text-gray-300 dark:text-gray-700'}`}>
+              <span className={`mx-1 text-xs ${i < maxStep ? 'text-purple-400 dark:text-purple-700' : 'text-gray-300 dark:text-gray-700'}`}>
                 /
               </span>
             )}

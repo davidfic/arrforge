@@ -44,6 +44,7 @@ export interface AppConfig {
 
 export interface WizardState {
   step: number;
+  maxStep: number;
   advancedMode: boolean;
   selectedApps: string[];
   os: 'linux' | 'macos';

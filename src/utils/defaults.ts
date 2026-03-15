@@ -2,6 +2,7 @@ import type { WizardState } from '../types';
 
 export const DEFAULT_STATE: WizardState = {
   step: 0,
+  maxStep: 0,
   advancedMode: false,
   selectedApps: [],
   os: 'linux',
