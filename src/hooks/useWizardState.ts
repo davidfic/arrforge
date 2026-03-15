@@ -32,9 +32,15 @@ function reducer(state: WizardState, action: WizardAction): WizardState {
     case 'TOGGLE_ADVANCED':
       return { ...state, advancedMode: !state.advancedMode };
     case 'TOGGLE_APP': {
-      const selected = state.selectedApps.includes(action.appId)
+      const wasSelected = state.selectedApps.includes(action.appId);
+      const selected = wasSelected
         ? state.selectedApps.filter((id) => id !== action.appId)
         : [...state.selectedApps, action.appId];
+      // Clean up appConfigs when deselecting
+      if (wasSelected && state.appConfigs[action.appId]) {
+        const { [action.appId]: _, ...rest } = state.appConfigs;
+        return { ...state, selectedApps: selected, appConfigs: rest };
+      }
       return { ...state, selectedApps: selected };
     }
     case 'SET_APPS':
@@ -58,8 +64,24 @@ function reducer(state: WizardState, action: WizardAction): WizardState {
         ...state,
         customPaths: { ...state.customPaths, [action.appId]: action.path },
       };
+    case 'SET_APP_CONFIG': {
+      const updated = { ...state.appConfigs, [action.appId]: action.config };
+      // Remove empty configs
+      if (!action.config.containerName && !action.config.imageTag && (!action.config.customEnv || Object.keys(action.config.customEnv).length === 0)) {
+        delete updated[action.appId];
+      }
+      return { ...state, appConfigs: updated };
+    }
     case 'TOGGLE_VPN':
       return { ...state, includeVpnCompose: !state.includeVpnCompose };
+    case 'TOGGLE_SETUP_TASK': {
+      const tasks = state.completedSetupTasks.includes(action.taskId)
+        ? state.completedSetupTasks.filter((id) => id !== action.taskId)
+        : [...state.completedSetupTasks, action.taskId];
+      return { ...state, completedSetupTasks: tasks };
+    }
+    case 'IMPORT_STATE':
+      return { ...DEFAULT_STATE, ...action.state, step: state.step };
     case 'RESET':
       return DEFAULT_STATE;
     default:

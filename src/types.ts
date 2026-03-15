@@ -36,6 +36,12 @@ export interface AppDefinition {
   notes?: string;
 }
 
+export interface AppConfig {
+  containerName?: string;
+  imageTag?: string;
+  customEnv?: Record<string, string>;
+}
+
 export interface WizardState {
   step: number;
   advancedMode: boolean;
@@ -47,7 +53,9 @@ export interface WizardState {
   timezone: string;
   networkName: string;
   customPaths: Record<string, string>;
+  appConfigs: Record<string, AppConfig>;
   includeVpnCompose: boolean;
+  completedSetupTasks: string[];
 }
 
 export type WizardAction =
@@ -62,7 +70,10 @@ export type WizardAction =
   | { type: 'SET_TIMEZONE'; timezone: string }
   | { type: 'SET_NETWORK_NAME'; name: string }
   | { type: 'SET_CUSTOM_PATH'; appId: string; path: string }
+  | { type: 'SET_APP_CONFIG'; appId: string; config: AppConfig }
   | { type: 'TOGGLE_VPN' }
+  | { type: 'TOGGLE_SETUP_TASK'; taskId: string }
+  | { type: 'IMPORT_STATE'; state: WizardState }
   | { type: 'RESET' };
 
 export const CATEGORY_LABELS: Record<AppCategory, string> = {

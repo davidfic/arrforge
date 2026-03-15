@@ -1,11 +1,17 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ArrForge — Build Your Media Server Stack</title>
     <meta name="description" content="Generate Docker Compose files for your arr media stack in minutes. Sonarr, Radarr, Prowlarr, and more." />
+    <script>
+      (function(){var t=localStorage.getItem('arrforge-theme');
+      if(t==='"light"')document.documentElement.classList.remove('dark');
+      else if(t!=='"dark"'&&!matchMedia('(prefers-color-scheme:dark)').matches)
+      document.documentElement.classList.remove('dark');})()
+    </script>
   </head>
   <body>
     <div id="root"></div>

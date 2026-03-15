@@ -18,10 +18,10 @@ export function WelcomeStep({ dispatch }: WelcomeStepProps) {
   return (
     <div className="max-w-2xl mx-auto text-center">
       <div className="mb-8">
-        <h2 className="text-3xl font-bold text-white mb-3">
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
           Let's build your media server stack
         </h2>
-        <p className="text-gray-400">
+        <p className="text-gray-500 dark:text-gray-400">
           ArrForge generates a ready-to-run Docker Compose setup for Sonarr, Radarr,
           and the rest of the arr ecosystem. Pick your apps, configure paths, and
           download everything you need.
@@ -31,17 +31,17 @@ export function WelcomeStep({ dispatch }: WelcomeStepProps) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
         <button
           onClick={handleStarter}
-          className="p-6 rounded-xl border-2 border-purple-700 bg-purple-950/30 hover:bg-purple-950/50 transition-colors text-left"
+          className="p-6 rounded-xl border-2 border-purple-400 dark:border-purple-700 bg-purple-50 dark:bg-purple-950/30 hover:bg-purple-100 dark:hover:bg-purple-950/50 transition-colors text-left"
         >
-          <h3 className="font-semibold text-white mb-2">Use Recommended Starter</h3>
-          <p className="text-sm text-gray-400 mb-3">
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Use Recommended Starter</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
             Pre-selected apps for a complete setup:
           </p>
           <div className="flex flex-wrap gap-1.5">
             {['Sonarr', 'Radarr', 'Prowlarr', 'qBittorrent', 'Plex'].map((name) => (
               <span
                 key={name}
-                className="text-xs px-2 py-0.5 rounded-full bg-purple-900/50 text-purple-300 border border-purple-800"
+                className="text-xs px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300 border border-purple-200 dark:border-purple-800"
               >
                 {name}
               </span>
@@ -51,17 +51,17 @@ export function WelcomeStep({ dispatch }: WelcomeStepProps) {
 
         <button
           onClick={handleCustom}
-          className="p-6 rounded-xl border-2 border-gray-700 bg-gray-900/30 hover:bg-gray-900/50 transition-colors text-left"
+          className="p-6 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-colors text-left"
         >
-          <h3 className="font-semibold text-white mb-2">Build Custom Stack</h3>
-          <p className="text-sm text-gray-400">
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Build Custom Stack</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             Choose from 20 apps across media management, download clients, indexers,
             media servers, and more.
           </p>
         </button>
       </div>
 
-      <div className="text-sm text-gray-500 space-y-2">
+      <div className="text-sm text-gray-400 dark:text-gray-500 space-y-2">
         <p>New to Docker? Install it first:</p>
         <div className="flex justify-center gap-4">
           <a

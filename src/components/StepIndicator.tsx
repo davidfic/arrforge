@@ -1,4 +1,4 @@
-const STEPS = ['Welcome', 'Select Apps', 'Configure', 'Review'];
+const STEPS = ['Welcome', 'Select Apps', 'Configure', 'Review', 'Setup Guide'];
 
 interface StepIndicatorProps {
   currentStep: number;
@@ -20,10 +20,10 @@ export function StepIndicator({ currentStep, onStepClick }: StepIndicatorProps) 
               disabled={!isClickable}
               className={`flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm transition-colors ${
                 isCurrent
-                  ? 'bg-purple-900/50 text-purple-300 border border-purple-700'
+                  ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-700'
                   : isComplete
-                    ? 'text-purple-400 hover:text-purple-300 cursor-pointer'
-                    : 'text-gray-600 cursor-default'
+                    ? 'text-purple-600 dark:text-purple-400 hover:text-purple-500 dark:hover:text-purple-300 cursor-pointer'
+                    : 'text-gray-400 dark:text-gray-600 cursor-default'
               }`}
             >
               <span
@@ -31,8 +31,8 @@ export function StepIndicator({ currentStep, onStepClick }: StepIndicatorProps) 
                   isCurrent
                     ? 'bg-purple-600 text-white'
                     : isComplete
-                      ? 'bg-purple-800 text-purple-300'
-                      : 'bg-gray-800 text-gray-500'
+                      ? 'bg-purple-200 dark:bg-purple-800 text-purple-700 dark:text-purple-300'
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500'
                 }`}
               >
                 {isComplete ? '\u2713' : i + 1}
@@ -40,7 +40,7 @@ export function StepIndicator({ currentStep, onStepClick }: StepIndicatorProps) 
               <span className="hidden sm:inline">{label}</span>
             </button>
             {i < STEPS.length - 1 && (
-              <span className={`mx-1 text-xs ${i < currentStep ? 'text-purple-700' : 'text-gray-700'}`}>
+              <span className={`mx-1 text-xs ${i < currentStep ? 'text-purple-400 dark:text-purple-700' : 'text-gray-300 dark:text-gray-700'}`}>
                 /
               </span>
             )}

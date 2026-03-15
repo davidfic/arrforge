@@ -11,7 +11,9 @@ export const DEFAULT_STATE: WizardState = {
   timezone: 'America/New_York',
   networkName: 'media-stack',
   customPaths: {},
+  appConfigs: {},
   includeVpnCompose: false,
+  completedSetupTasks: [],
 };
 
 export const STARTER_APPS = ['sonarr', 'radarr', 'prowlarr', 'qbittorrent', 'plex'];

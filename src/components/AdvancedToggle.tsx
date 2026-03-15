@@ -9,13 +9,13 @@ export function AdvancedToggle({ enabled, onToggle }: AdvancedToggleProps) {
       onClick={onToggle}
       className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors ${
         enabled
-          ? 'bg-purple-900/50 text-purple-300 border border-purple-700'
-          : 'bg-gray-800/50 text-gray-400 border border-gray-700 hover:border-gray-600'
+          ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-700'
+          : 'bg-gray-100 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600'
       }`}
     >
       <span
         className={`w-9 h-5 rounded-full relative transition-colors flex-shrink-0 ${
-          enabled ? 'bg-purple-600' : 'bg-gray-600'
+          enabled ? 'bg-purple-600' : 'bg-gray-300 dark:bg-gray-600'
         }`}
       >
         <span

@@ -1,5 +1,16 @@
-import type { WizardState } from '../types';
+import type { WizardState, AppConfig, AppDefinition } from '../types';
 import { getAppById } from '../data/apps';
+import { getConnectionsFrom } from '../data/connections';
+
+function resolveImage(app: AppDefinition, config?: AppConfig): string {
+  if (!config?.imageTag) return app.image;
+  const base = app.image.split(':')[0];
+  return `${base}:${config.imageTag}`;
+}
+
+function resolveContainerName(app: AppDefinition, config?: AppConfig): string {
+  return config?.containerName || app.id;
+}
 
 // Port conflict pairs: if both selected, offset the second one
 const PORT_CONFLICTS: { appA: string; appB: string; port: number; offset: number }[] = [
@@ -29,17 +40,35 @@ export function generateCompose(state: WizardState): string {
     const app = getAppById(appId);
     if (!app) continue;
 
-    lines.push(`  ${app.id}:`);
-    lines.push(`    image: ${app.image}`);
-    lines.push(`    container_name: ${app.id}`);
+    const config = state.appConfigs[appId];
+    const containerName = resolveContainerName(app, config);
+    const image = resolveImage(app, config);
+
+    lines.push(`  ${containerName}:`);
+    lines.push(`    image: ${image}`);
+    lines.push(`    container_name: ${containerName}`);
 
     if (app.networkMode) {
       lines.push(`    network_mode: ${app.networkMode}`);
     } else {
-      networkApps.push(app.id);
+      networkApps.push(containerName);
     }
 
     lines.push(`    restart: unless-stopped`);
+
+    // Depends on (from connection data)
+    const deps = getConnectionsFrom(appId, state.selectedApps);
+    if (deps.length > 0) {
+      const depNames = [...new Set(deps.map((d) => {
+        const depConfig = state.appConfigs[d.to];
+        const depApp = getAppById(d.to);
+        return depApp ? resolveContainerName(depApp, depConfig) : d.to;
+      }))];
+      lines.push(`    depends_on:`);
+      for (const dep of depNames) {
+        lines.push(`      - ${dep}`);
+      }
+    }
 
     // Environment
     const envLines: string[] = [];
@@ -61,6 +90,13 @@ export function generateCompose(state: WizardState): string {
     if (app.id === 'flaresolverr') {
       envLines.length = 0;
       envLines.push(`      - TZ=\${TZ}`);
+    }
+
+    // Append custom env vars from per-app config
+    if (config?.customEnv) {
+      for (const [key, val] of Object.entries(config.customEnv)) {
+        envLines.push(`      - ${key}=${val}`);
+      }
     }
 
     if (envLines.length > 0) {

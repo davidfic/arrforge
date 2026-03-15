@@ -1,6 +1,7 @@
 import type { WizardState, WizardAction } from '../types';
 import { PathConfigForm } from '../components/PathConfigForm';
 import { SettingsForm } from '../components/SettingsForm';
+import { AppConfigPanel } from '../components/AppConfigPanel';
 
 interface ConfigureStepProps {
   state: WizardState;
@@ -11,8 +12,8 @@ export function ConfigureStep({ state, dispatch }: ConfigureStepProps) {
   return (
     <div>
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-white mb-1">Configure Your Stack</h2>
-        <p className="text-sm text-gray-400">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Configure Your Stack</h2>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
           Set paths, permissions, and timezone for your {state.selectedApps.length} selected apps
         </p>
       </div>
@@ -20,12 +21,13 @@ export function ConfigureStep({ state, dispatch }: ConfigureStepProps) {
       <div className="max-w-xl">
         <PathConfigForm state={state} dispatch={dispatch} />
         <SettingsForm state={state} dispatch={dispatch} />
+        <AppConfigPanel state={state} dispatch={dispatch} />
       </div>
 
-      <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-800">
+      <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
         <button
           onClick={() => dispatch({ type: 'SET_STEP', step: 1 })}
-          className="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors"
+          className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
         >
           Back
         </button>

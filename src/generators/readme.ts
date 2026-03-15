@@ -1,5 +1,6 @@
 import type { WizardState } from '../types';
 import { getAppById } from '../data/apps';
+import { getActiveConnections } from '../data/connections';
 
 export function generateReadme(state: WizardState): string {
   const lines: string[] = [];
@@ -90,15 +91,46 @@ export function generateReadme(state: WizardState): string {
   lines.push('Update the values in `.env` if they don\'t match.');
   lines.push('');
 
+  // Connection setup guide
+  const activeConns = getActiveConnections(state.selectedApps);
+  if (activeConns.length > 0) {
+    lines.push('## Connect Your Apps');
+    lines.push('');
+    lines.push('Your selected apps can be connected to work together. Follow these steps in order:');
+    lines.push('');
+
+    // Group by "from" app
+    const grouped = new Map<string, typeof activeConns>();
+    for (const conn of activeConns) {
+      const existing = grouped.get(conn.from) || [];
+      existing.push(conn);
+      grouped.set(conn.from, existing);
+    }
+
+    let stepNum = 1;
+    for (const [fromId, conns] of grouped) {
+      const fromApp = getAppById(fromId);
+      if (!fromApp) continue;
+      for (const conn of conns) {
+        const toApp = getAppById(conn.to);
+        if (!toApp) continue;
+        lines.push(`${stepNum}. **${fromApp.name} → ${toApp.name}** (${conn.label})`);
+        lines.push(`   ${conn.setupInstructions}`);
+        lines.push('');
+        stepNum++;
+      }
+    }
+  }
+
   // Next steps
   lines.push('## Next Steps');
   lines.push('');
   lines.push('1. Create the folder structure above');
   lines.push('2. Run `docker compose up -d`');
   lines.push('3. Access each service via the URLs above');
-  lines.push('4. Configure Prowlarr with your indexers');
-  lines.push('5. Connect Sonarr/Radarr to Prowlarr and your download client');
-  lines.push('6. Add your media library paths in your media server');
+  if (activeConns.length > 0) {
+    lines.push('4. Follow the "Connect Your Apps" guide above');
+  }
   lines.push('');
   lines.push('For detailed setup guides, see [TRaSH Guides](https://trash-guides.info/).');
   lines.push('');
