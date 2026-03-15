@@ -6,6 +6,7 @@ export interface AppConnection {
   type: ConnectionType;
   label: string;
   setupInstructions: string;
+  dependsOn?: boolean; // if true, generates depends_on in compose (most connections are setup-only)
 }
 
 export const connections: AppConnection[] = [

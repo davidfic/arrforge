@@ -56,14 +56,20 @@ export function generateCompose(state: WizardState): string {
 
     lines.push(`    restart: unless-stopped`);
 
-    // Depends on (from connection data)
-    const deps = getConnectionsFrom(appId, state.selectedApps);
-    if (deps.length > 0) {
-      const depNames = [...new Set(deps.map((d) => {
-        const depConfig = state.appConfigs[d.to];
-        const depApp = getAppById(d.to);
-        return depApp ? resolveContainerName(depApp, depConfig) : d.to;
-      }))];
+    // Depends on (only connections explicitly marked as startup dependencies)
+    const deps = getConnectionsFrom(appId, state.selectedApps).filter((c) => c.dependsOn);
+    const depNames = [...new Set(deps.map((d) => {
+      const depConfig = state.appConfigs[d.to];
+      const depApp = getAppById(d.to);
+      return depApp ? resolveContainerName(depApp, depConfig) : d.to;
+    }))];
+
+    // Download clients depend on gluetun when VPN is enabled
+    if (state.includeVpnCompose && app.category === 'download-clients') {
+      depNames.push('gluetun');
+    }
+
+    if (depNames.length > 0) {
       lines.push(`    depends_on:`);
       for (const dep of depNames) {
         lines.push(`      - ${dep}`);
