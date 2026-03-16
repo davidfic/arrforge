@@ -15,8 +15,8 @@ export function SetupGuideStep({ state, dispatch, onReset }: SetupGuideStepProps
   return (
     <div>
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Setup Guide</h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <h2 className="text-2xl font-bold text-theme-text-primary mb-1">Setup Guide</h2>
+        <p className="text-sm text-theme-text-muted">
           Follow these steps to configure your apps after starting the stack
         </p>
       </div>
@@ -24,12 +24,12 @@ export function SetupGuideStep({ state, dispatch, onReset }: SetupGuideStepProps
       {/* Progress bar */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs text-gray-500 dark:text-gray-400">
+          <span className="text-xs text-theme-text-muted">
             {completed.length} of {tasks.length} tasks completed
           </span>
-          <span className="text-xs font-medium text-purple-600 dark:text-purple-400">{progress}%</span>
+          <span className="text-xs font-medium text-theme-accent-text">{progress}%</span>
         </div>
-        <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+        <div className="h-2 bg-theme-bg-surface rounded-full overflow-hidden">
           <div
             className="h-full bg-purple-600 rounded-full transition-all duration-300"
             style={{ width: `${progress}%` }}
@@ -46,8 +46,8 @@ export function SetupGuideStep({ state, dispatch, onReset }: SetupGuideStepProps
               key={task.id}
               className={`p-4 rounded-lg border transition-colors ${
                 isDone
-                  ? 'bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900/50'
-                  : 'bg-gray-50 dark:bg-gray-900/50 border-gray-200 dark:border-gray-800'
+                  ? 'bg-green-900/20 border-green-800/50'
+                  : 'bg-theme-bg-surface border-theme-border-subtle'
               }`}
             >
               <div className="flex items-start gap-3">
@@ -56,7 +56,7 @@ export function SetupGuideStep({ state, dispatch, onReset }: SetupGuideStepProps
                   className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors ${
                     isDone
                       ? 'bg-green-500 border-green-500 text-white'
-                      : 'border-gray-300 dark:border-gray-600 hover:border-purple-500'
+                      : 'border-theme-border hover:border-purple-500'
                   }`}
                 >
                   {isDone && (
@@ -67,10 +67,10 @@ export function SetupGuideStep({ state, dispatch, onReset }: SetupGuideStepProps
                 </button>
 
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-medium ${isDone ? 'text-green-700 dark:text-green-400 line-through' : 'text-gray-900 dark:text-white'}`}>
+                  <p className={`text-sm font-medium ${isDone ? 'text-green-500 line-through' : 'text-theme-text-primary'}`}>
                     {task.title}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{task.description}</p>
+                  <p className="text-xs text-theme-text-muted mt-1">{task.description}</p>
                   <div className="flex items-center gap-3 mt-2">
                     {task.url && (
                       <a
@@ -100,16 +100,16 @@ export function SetupGuideStep({ state, dispatch, onReset }: SetupGuideStepProps
         })}
       </div>
 
-      <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
+      <div className="flex justify-between items-center mt-8 pt-6 border-t border-theme-border-subtle">
         <button
           onClick={() => dispatch({ type: 'SET_STEP', step: 3 })}
-          className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+          className="px-4 py-2 text-sm text-theme-text-muted hover:text-theme-text-primary transition-colors"
         >
           Back to Review
         </button>
         <button
           onClick={onReset}
-          className="px-4 py-2 text-sm text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-colors"
+          className="px-4 py-2 text-sm text-red-500 hover:text-red-400 transition-colors"
         >
           Start Over
         </button>

@@ -2,7 +2,85 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Theme definitions ── */
+:root {
+  --color-bg-base: #ffffff;
+  --color-bg-surface: #f9fafb;
+  --color-bg-elevated: rgba(255,255,255,0.8);
+  --color-border: #e5e7eb;
+  --color-border-subtle: #e5e7eb;
+  --color-text-primary: #111827;
+  --color-text-secondary: #374151;
+  --color-text-muted: #9ca3af;
+  --color-accent: #a855f7;
+  --color-accent-hover: #c084fc;
+  --color-accent-subtle: #f3e8ff;
+  --color-accent-text: #7e22ce;
+}
+
+[data-theme="dark"] {
+  --color-bg-base: #030712;
+  --color-bg-surface: rgba(17,24,39,0.5);
+  --color-bg-elevated: rgba(3,7,18,0.8);
+  --color-border: #374151;
+  --color-border-subtle: #1f2937;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #d1d5db;
+  --color-text-muted: #6b7280;
+  --color-accent: #a855f7;
+  --color-accent-hover: #c084fc;
+  --color-accent-subtle: rgba(88,28,135,0.5);
+  --color-accent-text: #d8b4fe;
+}
+
+[data-theme="midnight"] {
+  --color-bg-base: #0d1117;
+  --color-bg-surface: rgba(22,27,34,0.6);
+  --color-bg-elevated: rgba(13,17,23,0.85);
+  --color-border: #30363d;
+  --color-border-subtle: #21262d;
+  --color-text-primary: #e6edf3;
+  --color-text-secondary: #8b949e;
+  --color-text-muted: #484f58;
+  --color-accent: #a371f7;
+  --color-accent-hover: #c084fc;
+  --color-accent-subtle: rgba(163,113,247,0.15);
+  --color-accent-text: #d2a8ff;
+}
+
+[data-theme="nord"] {
+  --color-bg-base: #2e3440;
+  --color-bg-surface: rgba(59,66,82,0.5);
+  --color-bg-elevated: rgba(46,52,64,0.85);
+  --color-border: #4c566a;
+  --color-border-subtle: #3b4252;
+  --color-text-primary: #eceff4;
+  --color-text-secondary: #d8dee9;
+  --color-text-muted: #616e88;
+  --color-accent: #88c0d0;
+  --color-accent-hover: #8fbcbb;
+  --color-accent-subtle: rgba(136,192,208,0.15);
+  --color-accent-text: #88c0d0;
+}
+
+[data-theme="dracula"] {
+  --color-bg-base: #282a36;
+  --color-bg-surface: rgba(68,71,90,0.4);
+  --color-bg-elevated: rgba(40,42,54,0.85);
+  --color-border: #6272a4;
+  --color-border-subtle: #44475a;
+  --color-text-primary: #f8f8f2;
+  --color-text-secondary: #cdd6f4;
+  --color-text-muted: #6272a4;
+  --color-accent: #bd93f9;
+  --color-accent-hover: #caa9fa;
+  --color-accent-subtle: rgba(189,147,249,0.15);
+  --color-accent-text: #bd93f9;
+}
+
 body {
-  @apply bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased;
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
+  @apply antialiased;
   margin: 0;
 }

@@ -11,7 +11,7 @@ interface CategoryGroupProps {
 export function CategoryGroup({ label, apps, selectedApps, onToggleApp }: CategoryGroupProps) {
   return (
     <div>
-      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">{label}</h3>
+      <h3 className="text-sm font-medium text-theme-text-secondary mb-3">{label}</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {apps.map((app) => (
           <AppCard

@@ -47,14 +47,14 @@ export function ImportExport({ state, dispatch }: ImportExportProps) {
       <a
         href={exportUrl}
         download="arrforge-config.json"
-        className="px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors border border-gray-200 dark:border-gray-700"
+        className="px-3 py-1.5 rounded-lg text-xs font-medium bg-theme-bg-surface text-theme-text-secondary hover:bg-theme-bg-surface transition-colors border border-theme-border"
       >
         Export Config
       </a>
 
       <button
         onClick={() => fileRef.current?.click()}
-        className="px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors border border-gray-200 dark:border-gray-700"
+        className="px-3 py-1.5 rounded-lg text-xs font-medium bg-theme-bg-surface text-theme-text-secondary hover:bg-theme-bg-surface transition-colors border border-theme-border"
       >
         Import Config
       </button>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -8,9 +8,7 @@
     <meta name="description" content="Generate Docker Compose files for your arr media stack in minutes. Sonarr, Radarr, Prowlarr, and more." />
     <script>
       (function(){var t=localStorage.getItem('arrforge-theme');
-      if(t==='"light"')document.documentElement.classList.remove('dark');
-      else if(t!=='"dark"'&&!matchMedia('(prefers-color-scheme:dark)').matches)
-      document.documentElement.classList.remove('dark');})()
+      if(t)document.documentElement.dataset.theme=JSON.parse(t);})()
     </script>
   </head>
   <body>

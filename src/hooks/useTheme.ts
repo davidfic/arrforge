@@ -1,42 +1,28 @@
 import { useCallback, useEffect } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 
-export type ThemePreference = 'light' | 'dark' | 'system';
+export type Theme = 'light' | 'dark' | 'midnight' | 'nord' | 'dracula';
 
-function resolveTheme(pref: ThemePreference): 'light' | 'dark' {
-  if (pref !== 'system') return pref;
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
+export const THEMES: { id: Theme; label: string; bg: string; accent: string }[] = [
+  { id: 'light', label: 'Light', bg: '#ffffff', accent: '#a855f7' },
+  { id: 'dark', label: 'Dark', bg: '#030712', accent: '#a855f7' },
+  { id: 'midnight', label: 'Midnight', bg: '#0d1117', accent: '#a371f7' },
+  { id: 'nord', label: 'Nord', bg: '#2e3440', accent: '#88c0d0' },
+  { id: 'dracula', label: 'Dracula', bg: '#282a36', accent: '#bd93f9' },
+];
 
 export function useTheme() {
-  const [preference, setPreference] = useLocalStorage<ThemePreference>('arrforge-theme', 'system');
-  const resolved = resolveTheme(preference);
+  const [theme, setTheme] = useLocalStorage<Theme>('arrforge-theme', 'dark');
 
   useEffect(() => {
-    const root = document.documentElement;
-    if (resolved === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-  }, [resolved]);
-
-  // Listen for system preference changes when set to 'system'
-  useEffect(() => {
-    if (preference !== 'system') return;
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const handler = () => {
-      document.documentElement.classList.toggle('dark', mq.matches);
-    };
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, [preference]);
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
 
   const cycle = useCallback(() => {
-    const order: ThemePreference[] = ['light', 'dark', 'system'];
-    const next = order[(order.indexOf(preference) + 1) % order.length];
-    setPreference(next);
-  }, [preference, setPreference]);
+    const ids = THEMES.map((t) => t.id);
+    const next = ids[(ids.indexOf(theme) + 1) % ids.length];
+    setTheme(next);
+  }, [theme, setTheme]);
 
-  return { preference, resolved, cycle };
+  return { theme, setTheme, cycle };
 }

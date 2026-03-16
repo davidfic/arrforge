@@ -45,17 +45,17 @@ export function ComposePreview({ state }: ComposePreviewProps) {
   }, [content]);
 
   return (
-    <div className="border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
+    <div className="border border-theme-border-subtle rounded-xl overflow-hidden">
       {/* Tabs */}
-      <div className="flex border-b border-gray-200 dark:border-gray-800 overflow-x-auto bg-gray-50 dark:bg-gray-900/50">
+      <div className="flex border-b border-theme-border-subtle overflow-x-auto bg-theme-bg-surface">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`px-4 py-2 text-xs whitespace-nowrap border-b-2 transition-colors ${
               activeTab === tab.id
-                ? 'border-purple-500 text-purple-600 dark:text-purple-300 bg-white dark:bg-gray-900'
-                : 'border-transparent text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'
+                ? 'border-purple-500 text-theme-accent-text bg-theme-bg-surface'
+                : 'border-transparent text-theme-text-muted hover:text-theme-text-secondary'
             }`}
           >
             {tab.label}
@@ -67,11 +67,11 @@ export function ComposePreview({ state }: ComposePreviewProps) {
       <div className="relative">
         <button
           onClick={handleCopy}
-          className="absolute top-2 right-2 px-2 py-1 text-xs bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded hover:text-gray-900 dark:hover:text-white transition-colors z-10"
+          className="absolute top-2 right-2 px-2 py-1 text-xs bg-theme-bg-surface text-theme-text-muted rounded hover:text-theme-text-primary transition-colors z-10"
         >
           {copied ? 'Copied!' : 'Copy'}
         </button>
-        <pre className="p-4 text-xs text-gray-700 dark:text-gray-300 overflow-x-auto max-h-[500px] overflow-y-auto bg-gray-50 dark:bg-gray-950">
+        <pre className="p-4 text-xs text-theme-text-secondary overflow-x-auto max-h-[500px] overflow-y-auto bg-theme-bg-base">
           <code>{content}</code>
         </pre>
       </div>
