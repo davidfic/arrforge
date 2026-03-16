@@ -38,7 +38,7 @@ export function WelcomeStep({ dispatch }: WelcomeStepProps) {
             Pre-selected apps for a complete setup:
           </p>
           <div className="flex flex-wrap gap-1.5">
-            {['Sonarr', 'Radarr', 'Prowlarr', 'qBittorrent', 'Plex'].map((name) => (
+            {['Sonarr', 'Radarr', 'Prowlarr', 'qBittorrent'].map((name) => (
               <span
                 key={name}
                 className="text-xs px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300 border border-purple-200 dark:border-purple-800"

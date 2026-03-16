@@ -17,7 +17,7 @@ export const DEFAULT_STATE: WizardState = {
   completedSetupTasks: [],
 };
 
-export const STARTER_APPS = ['sonarr', 'radarr', 'prowlarr', 'qbittorrent', 'plex'];
+export const STARTER_APPS = ['sonarr', 'radarr', 'prowlarr', 'qbittorrent'];
 
 export const TIMEZONES = [
   'America/New_York',
