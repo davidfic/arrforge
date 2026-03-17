@@ -2,7 +2,7 @@ import { useReducer, useEffect, useCallback } from 'react';
 import type { WizardState, WizardAction } from '../types';
 import { DEFAULT_STATE } from '../utils/defaults';
 
-const STORAGE_KEY = 'arrforge-wizard-state';
+const STORAGE_KEY = 'arrforge-wizard-state-v2';
 
 function loadState(): WizardState {
   try {
