@@ -64,11 +64,6 @@ export function generateCompose(state: WizardState): string {
       return depApp ? resolveContainerName(depApp, depConfig) : d.to;
     }))];
 
-    // Download clients depend on gluetun when VPN is enabled
-    if (state.includeVpnCompose && app.category === 'download-clients') {
-      depNames.push('gluetun');
-    }
-
     if (depNames.length > 0) {
       lines.push(`    depends_on:`);
       for (const dep of depNames) {
