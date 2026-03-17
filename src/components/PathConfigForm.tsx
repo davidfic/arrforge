@@ -96,6 +96,26 @@ export function PathConfigForm({ state, dispatch }: PathConfigFormProps) {
         </select>
       </div>
 
+      {/* VPN toggle */}
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm font-medium text-theme-text-secondary">Route download clients through VPN</p>
+          <p className="text-xs text-theme-text-muted">Generates a separate docker-compose.vpn.yml with gluetun</p>
+        </div>
+        <button
+          onClick={() => dispatch({ type: 'TOGGLE_VPN' })}
+          className={`w-10 h-5 rounded-full relative flex-shrink-0 transition-colors ${
+            state.includeVpnCompose ? 'bg-purple-600' : 'bg-gray-400'
+          }`}
+        >
+          <span
+            className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+              state.includeVpnCompose ? 'translate-x-5' : 'translate-x-0'
+            }`}
+          />
+        </button>
+      </div>
+
       {/* Folder structure preview */}
       <div>
         <label className="block text-sm font-medium text-theme-text-secondary mb-2">Folder Structure Preview</label>

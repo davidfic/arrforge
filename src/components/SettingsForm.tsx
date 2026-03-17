@@ -24,26 +24,6 @@ export function SettingsForm({ state, dispatch }: SettingsFormProps) {
         />
       </div>
 
-      {/* VPN toggle */}
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-theme-text-secondary">Include VPN compose file</p>
-          <p className="text-xs text-theme-text-muted">Generates a separate docker-compose.vpn.yml with gluetun</p>
-        </div>
-        <button
-          onClick={() => dispatch({ type: 'TOGGLE_VPN' })}
-          className={`w-10 h-5 rounded-full relative flex-shrink-0 transition-colors ${
-            state.includeVpnCompose ? 'bg-purple-600' : 'bg-gray-400'
-          }`}
-        >
-          <span
-            className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
-              state.includeVpnCompose ? 'translate-x-5' : 'translate-x-0'
-            }`}
-          />
-        </button>
-      </div>
-
       {/* Per-app custom paths */}
       <div>
         <label className="block text-sm font-medium text-theme-text-secondary mb-2">Custom Config Paths</label>
