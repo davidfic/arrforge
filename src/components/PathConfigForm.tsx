@@ -43,7 +43,7 @@ export function PathConfigForm({ state, dispatch }: PathConfigFormProps) {
           value={state.basePath}
           onChange={(e) => dispatch({ type: 'SET_BASE_PATH', path: e.target.value })}
           className="w-full bg-theme-bg-surface border border-theme-border rounded-lg px-3 py-2 text-sm text-theme-text-primary focus:outline-none focus:border-theme-accent focus:ring-1 focus:ring-theme-accent"
-          placeholder="/data"
+          placeholder="./data"
         />
         <p className="text-xs text-theme-text-muted mt-1">
           Uses the <a href="https://trash-guides.info/Hardlinks/How-to-setup-for/Docker/" target="_blank" rel="noopener noreferrer" className="text-purple-500 hover:text-purple-400">TRaSH Guides recommended folder structure</a>

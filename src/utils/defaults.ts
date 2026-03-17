@@ -6,7 +6,7 @@ export const DEFAULT_STATE: WizardState = {
   advancedMode: false,
   selectedApps: [],
   os: 'linux',
-  basePath: '/data',
+  basePath: './data',
   puid: '1000',
   pgid: '1000',
   timezone: 'America/New_York',
