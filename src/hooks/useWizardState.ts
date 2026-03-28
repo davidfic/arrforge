@@ -74,6 +74,8 @@ function reducer(state: WizardState, action: WizardAction): WizardState {
     }
     case 'TOGGLE_VPN':
       return { ...state, includeVpnCompose: !state.includeVpnCompose };
+    case 'SET_GPU_TYPE':
+      return { ...state, gpuType: action.gpuType };
     case 'TOGGLE_SETUP_TASK': {
       const tasks = state.completedSetupTasks.includes(action.taskId)
         ? state.completedSetupTasks.filter((id) => id !== action.taskId)

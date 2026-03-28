@@ -14,6 +14,7 @@ export const DEFAULT_STATE: WizardState = {
   customPaths: {},
   appConfigs: {},
   includeVpnCompose: false,
+  gpuType: 'none',
   completedSetupTasks: [],
 };
 

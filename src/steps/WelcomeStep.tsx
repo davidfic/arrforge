@@ -1,13 +1,14 @@
 import type { WizardAction } from '../types';
-import { STARTER_APPS } from '../utils/defaults';
+import { presets, getPresetAppNames } from '../data/presets';
 
 interface WelcomeStepProps {
   dispatch: React.Dispatch<WizardAction>;
+  onOpenGallery: () => void;
 }
 
-export function WelcomeStep({ dispatch }: WelcomeStepProps) {
-  const handleStarter = () => {
-    dispatch({ type: 'SET_APPS', appIds: STARTER_APPS });
+export function WelcomeStep({ dispatch, onOpenGallery }: WelcomeStepProps) {
+  const handlePreset = (appIds: string[]) => {
+    dispatch({ type: 'SET_APPS', appIds });
     dispatch({ type: 'SET_STEP', step: 1 });
   };
 
@@ -16,48 +17,57 @@ export function WelcomeStep({ dispatch }: WelcomeStepProps) {
   };
 
   return (
-    <div className="max-w-2xl mx-auto text-center">
+    <div className="max-w-3xl mx-auto text-center">
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-theme-text-primary mb-3">
           Let's build your media server stack
         </h2>
         <p className="text-theme-text-muted">
           ArrForge generates a ready-to-run Docker Compose setup for Sonarr, Radarr,
-          and the rest of the arr ecosystem. Pick your apps, configure paths, and
-          download everything you need.
+          and the rest of the arr ecosystem. Pick a preset or build your own.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-        <button
-          onClick={handleStarter}
-          className="p-6 rounded-xl border-2 border-theme-accent bg-theme-accent-subtle hover:bg-theme-accent-subtle transition-colors text-left"
-        >
-          <h3 className="font-semibold text-theme-text-primary mb-2">Use Recommended Starter</h3>
-          <p className="text-sm text-theme-text-muted mb-3">
-            Pre-selected apps for a complete setup:
-          </p>
-          <div className="flex flex-wrap gap-1.5">
-            {['Sonarr', 'Radarr', 'Prowlarr', 'qBittorrent'].map((name) => (
-              <span
-                key={name}
-                className="text-xs px-2 py-0.5 rounded-full bg-theme-accent-subtle text-theme-accent-text border border-theme-accent"
-              >
-                {name}
-              </span>
-            ))}
-          </div>
-        </button>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 text-left">
+        {presets.map((preset) => (
+          <button
+            key={preset.id}
+            onClick={() => handlePreset(preset.appIds)}
+            className="p-5 rounded-xl border-2 border-theme-border bg-theme-bg-surface hover:border-theme-accent transition-colors text-left"
+          >
+            <h3 className="font-semibold text-theme-text-primary mb-1">{preset.name}</h3>
+            <p className="text-sm text-theme-text-muted mb-3">{preset.description}</p>
+            <div className="flex flex-wrap gap-1.5">
+              {getPresetAppNames(preset).map((name) => (
+                <span
+                  key={name}
+                  className="text-xs px-2 py-0.5 rounded-full bg-theme-accent-subtle text-theme-accent-text border border-theme-accent"
+                >
+                  {name}
+                </span>
+              ))}
+            </div>
+          </button>
+        ))}
 
         <button
           onClick={handleCustom}
-          className="p-6 rounded-xl border-2 border-theme-border bg-theme-bg-surface hover:bg-theme-bg-surface transition-colors text-left"
+          className="p-5 rounded-xl border-2 border-dashed border-theme-border bg-theme-bg-surface hover:border-theme-accent transition-colors text-left"
         >
-          <h3 className="font-semibold text-theme-text-primary mb-2">Build Custom Stack</h3>
+          <h3 className="font-semibold text-theme-text-primary mb-1">Build Custom Stack</h3>
           <p className="text-sm text-theme-text-muted">
-            Choose from 20 apps across media management, download clients, indexers,
+            Choose from 20+ apps across media management, download clients, indexers,
             media servers, and more.
           </p>
+        </button>
+      </div>
+
+      <div className="mb-6">
+        <button
+          onClick={onOpenGallery}
+          className="text-sm text-purple-500 hover:text-purple-400 transition-colors"
+        >
+          Browse the Stack Gallery for more configurations
         </button>
       </div>
 

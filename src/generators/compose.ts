@@ -18,7 +18,7 @@ const PORT_CONFLICTS: { appA: string; appB: string; port: number; offset: number
   { appA: 'jellyfin', appB: 'emby', port: 8096, offset: 8097 },
 ];
 
-function getPortOverrides(selectedApps: string[]): Record<string, { overrides: Record<number, number>; conflictWith: string }> {
+export function getPortOverrides(selectedApps: string[]): Record<string, { overrides: Record<number, number>; conflictWith: string }> {
   const result: Record<string, { overrides: Record<number, number>; conflictWith: string }> = {};
   for (const { appA, appB, port, offset } of PORT_CONFLICTS) {
     if (selectedApps.includes(appA) && selectedApps.includes(appB)) {
@@ -66,8 +66,16 @@ export function generateCompose(state: WizardState): string {
 
     if (depNames.length > 0) {
       lines.push(`    depends_on:`);
-      for (const dep of depNames) {
-        lines.push(`      - ${dep}`);
+      for (const dep of deps) {
+        const depApp = getAppById(dep.to);
+        const depConfig = state.appConfigs[dep.to];
+        const depName = depApp ? resolveContainerName(depApp, depConfig) : dep.to;
+        if (depApp?.healthcheck) {
+          lines.push(`      ${depName}:`);
+          lines.push(`        condition: service_healthy`);
+        } else {
+          lines.push(`      - ${depName}`);
+        }
       }
     }
 
@@ -134,6 +142,33 @@ export function generateCompose(state: WizardState): string {
         const proto = port.protocol && port.protocol !== 'tcp' ? `/${port.protocol}` : '';
         lines.push(`      - "${hostPort}:${port.container}${proto}"`);
       }
+    }
+
+    // GPU passthrough for media servers
+    const MEDIA_SERVERS = ['plex', 'jellyfin', 'emby'];
+    if (state.gpuType !== 'none' && MEDIA_SERVERS.includes(app.id)) {
+      if (state.gpuType === 'intel') {
+        lines.push(`    devices:`);
+        lines.push(`      - /dev/dri:/dev/dri`);
+      } else if (state.gpuType === 'nvidia') {
+        lines.push(`    runtime: nvidia`);
+        lines.push(`    environment:`);
+        lines.push(`      - NVIDIA_VISIBLE_DEVICES=all`);
+        lines.push(`      - NVIDIA_DRIVER_CAPABILITIES=all`);
+      } else if (state.gpuType === 'vaapi') {
+        lines.push(`    devices:`);
+        lines.push(`      - /dev/dri/renderD128:/dev/dri/renderD128`);
+      }
+    }
+
+    // Healthcheck
+    if (app.healthcheck) {
+      lines.push(`    healthcheck:`);
+      lines.push(`      test: ["CMD-SHELL", "${app.healthcheck.test}"]`);
+      lines.push(`      interval: ${app.healthcheck.interval || '30s'}`);
+      lines.push(`      timeout: ${app.healthcheck.timeout || '10s'}`);
+      lines.push(`      retries: ${app.healthcheck.retries || 3}`);
+      lines.push(`      start_period: ${app.healthcheck.startPeriod || '30s'}`);
     }
 
     lines.push('');

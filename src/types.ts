@@ -19,6 +19,14 @@ export interface AppPort {
   description: string;
 }
 
+export interface AppHealthcheck {
+  test: string;
+  interval?: string;
+  timeout?: string;
+  retries?: number;
+  startPeriod?: string;
+}
+
 export interface AppDefinition {
   id: string;
   name: string;
@@ -30,6 +38,7 @@ export interface AppDefinition {
   env?: Record<string, string>;
   networkMode?: string;
   restart?: string;
+  healthcheck?: AppHealthcheck;
   docUrl: string;
   trashUrl?: string;
   starter: boolean;
@@ -41,6 +50,8 @@ export interface AppConfig {
   imageTag?: string;
   customEnv?: Record<string, string>;
 }
+
+export type GpuType = 'none' | 'intel' | 'nvidia' | 'vaapi';
 
 export interface WizardState {
   step: number;
@@ -56,6 +67,7 @@ export interface WizardState {
   customPaths: Record<string, string>;
   appConfigs: Record<string, AppConfig>;
   includeVpnCompose: boolean;
+  gpuType: GpuType;
   completedSetupTasks: string[];
 }
 
@@ -73,6 +85,7 @@ export type WizardAction =
   | { type: 'SET_CUSTOM_PATH'; appId: string; path: string }
   | { type: 'SET_APP_CONFIG'; appId: string; config: AppConfig }
   | { type: 'TOGGLE_VPN' }
+  | { type: 'SET_GPU_TYPE'; gpuType: GpuType }
   | { type: 'TOGGLE_SETUP_TASK'; taskId: string }
   | { type: 'IMPORT_STATE'; state: WizardState }
   | { type: 'RESET' };

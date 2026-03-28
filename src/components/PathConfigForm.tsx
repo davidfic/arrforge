@@ -1,4 +1,4 @@
-import type { WizardState, WizardAction } from '../types';
+import type { WizardState, WizardAction, GpuType } from '../types';
 import { Tooltip } from './Tooltip';
 import { TIMEZONES } from '../utils/defaults';
 
@@ -115,6 +115,43 @@ export function PathConfigForm({ state, dispatch }: PathConfigFormProps) {
           />
         </button>
       </div>
+
+      {/* GPU transcoding */}
+      {state.selectedApps.some((id) => ['plex', 'jellyfin', 'emby'].includes(id)) && (
+        <div>
+          <label className="block text-sm font-medium text-theme-text-secondary mb-2">
+            Hardware Transcoding
+            <Tooltip text="Adds GPU device mappings to media server containers for hardware-accelerated transcoding">
+              <span className="ml-1 text-theme-text-muted cursor-help">(?)</span>
+            </Tooltip>
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {([
+              { value: 'none', label: 'None' },
+              { value: 'intel', label: 'Intel QSV' },
+              { value: 'nvidia', label: 'NVIDIA' },
+              { value: 'vaapi', label: 'VAAPI' },
+            ] as { value: GpuType; label: string }[]).map(({ value, label }) => (
+              <button
+                key={value}
+                onClick={() => dispatch({ type: 'SET_GPU_TYPE', gpuType: value })}
+                className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${
+                  state.gpuType === value
+                    ? 'bg-theme-accent-subtle border-theme-accent text-theme-accent-text'
+                    : 'bg-theme-bg-surface border-theme-border text-theme-text-muted hover:border-theme-border'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          {state.gpuType === 'nvidia' && (
+            <p className="text-xs text-theme-text-muted mt-1">
+              Requires <a href="https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html" target="_blank" rel="noopener noreferrer" className="text-purple-500 hover:text-purple-400">NVIDIA Container Toolkit</a> installed on the host
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Folder structure preview */}
       <div>

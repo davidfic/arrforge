@@ -5,6 +5,7 @@ import { generateEnv } from '../generators/env';
 import { generateReadme } from '../generators/readme';
 import { generateAdvanced } from '../generators/advanced';
 import { generateVpnCompose } from '../generators/vpn';
+import { generateFolderGuide } from '../generators/folders';
 
 interface Tab {
   id: string;
@@ -17,6 +18,7 @@ const TABS: Tab[] = [
   { id: 'env', label: '.env', generate: generateEnv },
   { id: 'readme', label: 'README.md', generate: generateReadme },
   { id: 'advanced', label: 'ADVANCED.md', generate: generateAdvanced },
+  { id: 'folders', label: 'Folder Setup', generate: generateFolderGuide },
 ];
 
 const VPN_TAB: Tab = {

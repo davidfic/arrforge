@@ -1,6 +1,7 @@
 import type { WizardState } from '../types';
 import { getAppById } from '../data/apps';
 import { getActiveConnections } from '../data/connections';
+import { generateFolderGuide } from './folders';
 
 export function generateReadme(state: WizardState): string {
   const lines: string[] = [];
@@ -46,34 +47,8 @@ export function generateReadme(state: WizardState): string {
   }
   lines.push('');
 
-  // Folder structure
-  lines.push('## Folder Structure');
-  lines.push('');
-  lines.push('This setup uses the [TRaSH Guides recommended folder structure](https://trash-guides.info/Hardlinks/How-to-setup-for/Docker/):');
-  lines.push('');
-  lines.push('```');
-  lines.push(`${state.basePath}/`);
-  lines.push(`├── torrents/       # Torrent downloads`);
-  lines.push(`├── usenet/         # Usenet downloads`);
-  lines.push(`├── media/`);
-  lines.push(`│   ├── movies/     # Movie library`);
-  lines.push(`│   ├── tv/         # TV show library`);
-  lines.push(`│   ├── music/      # Music library`);
-  lines.push(`│   └── books/      # Book library`);
-  lines.push(`└── config/         # App configs (auto-created)`);
-  lines.push('```');
-  lines.push('');
-  lines.push('This structure enables **hardlinks** and **atomic moves**, which means:');
-  lines.push('- No extra disk space used when files are "moved" from downloads to library');
-  lines.push('- Instant file moves instead of slow copy + delete operations');
-  lines.push('');
-
-  // Create directories
-  lines.push('### Create the directory structure');
-  lines.push('');
-  lines.push('```bash');
-  lines.push(`mkdir -p ${state.basePath}/{torrents,usenet,media/{movies,tv,music,books},config}`);
-  lines.push('```');
+  // Folder structure (generated dynamically based on selected apps)
+  lines.push(generateFolderGuide(state));
   lines.push('');
 
   // PUID/PGID

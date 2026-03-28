@@ -4,6 +4,8 @@ import { getAppById } from '../data/apps';
 import { ComposePreview } from '../components/ComposePreview';
 import { buildZipBlob, buildComposeBlob } from '../generators/zip';
 import { ImportExport } from '../components/ImportExport';
+import { PortSummaryTable } from '../components/PortSummaryTable';
+import { ArchitectureDiagram } from '../components/ArchitectureDiagram';
 
 interface ReviewStepProps {
   state: WizardState;
@@ -63,6 +65,12 @@ export function ReviewStep({ state, dispatch, onReset }: ReviewStepProps) {
           })}
         </div>
       </div>
+
+      {/* Architecture diagram */}
+      <ArchitectureDiagram state={state} />
+
+      {/* Port summary */}
+      <PortSummaryTable state={state} />
 
       {/* File preview */}
       <ComposePreview state={state} />
