@@ -17,7 +17,7 @@ export function Layout({ children, currentStep, maxStep, advancedMode, onStepCli
   return (
     <div className="min-h-screen flex flex-col">
       <header className="border-b border-theme-border bg-theme-bg-elevated backdrop-blur-sm sticky top-0 z-40">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+        <div className="max-w-5xl mx-auto px-4 py-2 sm:py-3 flex flex-wrap items-center justify-between gap-2 sm:gap-4">
           <button
             onClick={() => onStepClick(0)}
             className="text-lg font-semibold text-theme-text-primary tracking-tight flex items-center gap-2 hover:text-theme-accent transition-colors"
@@ -25,10 +25,12 @@ export function Layout({ children, currentStep, maxStep, advancedMode, onStepCli
             <span className="text-theme-accent">&#9881;</span>
             ArrForge
           </button>
-          <StepIndicator currentStep={currentStep} maxStep={maxStep} onStepClick={onStepClick} />
           <div className="flex items-center gap-2">
             <ThemeToggle theme={theme.theme} onSelect={theme.setTheme} />
             <AdvancedToggle enabled={advancedMode} onToggle={onToggleAdvanced} />
+          </div>
+          <div className="w-full sm:w-auto sm:order-none order-last">
+            <StepIndicator currentStep={currentStep} maxStep={maxStep} onStepClick={onStepClick} />
           </div>
         </div>
       </header>

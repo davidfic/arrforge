@@ -54,7 +54,7 @@ export function AppCard({ app, selected, onToggle }: AppCardProps) {
           </div>
         </div>
         <div
-          className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors ${
+          className={`w-6 h-6 sm:w-5 sm:h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors ${
             selected
               ? 'bg-purple-600 border-purple-600 text-white'
               : 'border-theme-border'

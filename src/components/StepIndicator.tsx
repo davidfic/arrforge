@@ -28,7 +28,7 @@ export function StepIndicator({ currentStep, maxStep, onStepClick }: StepIndicat
               }`}
             >
               <span
-                className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-medium ${
+                className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-[10px] sm:text-xs font-medium ${
                   isCurrent
                     ? 'bg-purple-600 text-white'
                     : isClickable

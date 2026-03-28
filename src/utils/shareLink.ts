@@ -12,6 +12,10 @@ interface ShareableState {
   vpn?: boolean;
   gpu?: string;
   configs?: Record<string, unknown>;
+  customApps?: WizardState['customApps'];
+  multiHost?: boolean;
+  hosts?: WizardState['hosts'];
+  hostAssignments?: WizardState['hostAssignments'];
 }
 
 export function encodeStateToHash(state: WizardState): string {
@@ -27,6 +31,12 @@ export function encodeStateToHash(state: WizardState): string {
   if (state.includeVpnCompose) minimal.vpn = true;
   if (state.gpuType !== 'none') minimal.gpu = state.gpuType;
   if (Object.keys(state.appConfigs).length > 0) minimal.configs = state.appConfigs;
+  if (state.customApps.length > 0) minimal.customApps = state.customApps;
+  if (state.multiHost) {
+    minimal.multiHost = true;
+    minimal.hosts = state.hosts;
+    minimal.hostAssignments = state.hostAssignments;
+  }
 
   const json = JSON.stringify(minimal);
   return encodeURIComponent(btoa(json));
@@ -52,6 +62,12 @@ export function decodeHashToState(hash: string): Partial<WizardState> | null {
     if (minimal.vpn) partial.includeVpnCompose = true;
     if (minimal.gpu) partial.gpuType = minimal.gpu as WizardState['gpuType'];
     if (minimal.configs) partial.appConfigs = minimal.configs as WizardState['appConfigs'];
+    if (minimal.customApps) partial.customApps = minimal.customApps;
+    if (minimal.multiHost) {
+      partial.multiHost = true;
+      if (minimal.hosts) partial.hosts = minimal.hosts;
+      if (minimal.hostAssignments) partial.hostAssignments = minimal.hostAssignments;
+    }
 
     return partial;
   } catch {

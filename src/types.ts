@@ -4,7 +4,8 @@ export type AppCategory =
   | 'indexers'
   | 'media-servers'
   | 'reverse-proxies'
-  | 'utilities';
+  | 'utilities'
+  | 'custom';
 
 export interface AppVolume {
   host: string;
@@ -51,6 +52,12 @@ export interface AppConfig {
   customEnv?: Record<string, string>;
 }
 
+export interface HostDefinition {
+  id: string;
+  name: string;
+  ip: string;
+}
+
 export type GpuType = 'none' | 'intel' | 'nvidia' | 'vaapi';
 
 export interface WizardState {
@@ -69,6 +76,10 @@ export interface WizardState {
   includeVpnCompose: boolean;
   gpuType: GpuType;
   completedSetupTasks: string[];
+  customApps: AppDefinition[];
+  multiHost: boolean;
+  hosts: HostDefinition[];
+  hostAssignments: Record<string, string>; // appId -> hostId
 }
 
 export type WizardAction =
@@ -86,7 +97,16 @@ export type WizardAction =
   | { type: 'SET_APP_CONFIG'; appId: string; config: AppConfig }
   | { type: 'TOGGLE_VPN' }
   | { type: 'SET_GPU_TYPE'; gpuType: GpuType }
+  | { type: 'REORDER_APPS'; appIds: string[] }
   | { type: 'TOGGLE_SETUP_TASK'; taskId: string }
+  | { type: 'ADD_CUSTOM_APP'; app: AppDefinition }
+  | { type: 'UPDATE_CUSTOM_APP'; appId: string; app: AppDefinition }
+  | { type: 'REMOVE_CUSTOM_APP'; appId: string }
+  | { type: 'TOGGLE_MULTI_HOST' }
+  | { type: 'ADD_HOST'; host: HostDefinition }
+  | { type: 'UPDATE_HOST'; hostId: string; updates: Partial<HostDefinition> }
+  | { type: 'REMOVE_HOST'; hostId: string }
+  | { type: 'ASSIGN_APP_TO_HOST'; appId: string; hostId: string }
   | { type: 'IMPORT_STATE'; state: WizardState }
   | { type: 'RESET' };
 
@@ -97,6 +117,7 @@ export const CATEGORY_LABELS: Record<AppCategory, string> = {
   'media-servers': 'Media Servers',
   'reverse-proxies': 'Reverse Proxies',
   'utilities': 'Utilities',
+  'custom': 'Custom Apps',
 };
 
 export const CATEGORY_ORDER: AppCategory[] = [
@@ -106,4 +127,5 @@ export const CATEGORY_ORDER: AppCategory[] = [
   'media-servers',
   'reverse-proxies',
   'utilities',
+  'custom',
 ];

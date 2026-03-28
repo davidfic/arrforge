@@ -1,5 +1,5 @@
 import type { WizardState } from '../types';
-import { getAppById } from '../data/apps';
+import { getAppByIdWithCustom } from '../utils/appLookup';
 import { getActiveConnections } from '../data/connections';
 import { generateFolderGuide } from './folders';
 
@@ -33,7 +33,7 @@ export function generateReadme(state: WizardState): string {
   lines.push('|---------|-----|-------|');
 
   for (const appId of state.selectedApps) {
-    const app = getAppById(appId);
+    const app = getAppByIdWithCustom(appId, state.customApps);
     if (!app) continue;
     if (app.ports.length === 0) {
       lines.push(`| ${app.name} | N/A | ${app.notes || 'No web UI'} |`);
@@ -84,10 +84,10 @@ export function generateReadme(state: WizardState): string {
 
     let stepNum = 1;
     for (const [fromId, conns] of grouped) {
-      const fromApp = getAppById(fromId);
+      const fromApp = getAppByIdWithCustom(fromId, state.customApps);
       if (!fromApp) continue;
       for (const conn of conns) {
-        const toApp = getAppById(conn.to);
+        const toApp = getAppByIdWithCustom(conn.to, state.customApps);
         if (!toApp) continue;
         lines.push(`${stepNum}. **${fromApp.name} → ${toApp.name}** (${conn.label})`);
         lines.push(`   ${conn.setupInstructions}`);

@@ -16,6 +16,10 @@ export const DEFAULT_STATE: WizardState = {
   includeVpnCompose: false,
   gpuType: 'none',
   completedSetupTasks: [],
+  customApps: [],
+  multiHost: false,
+  hosts: [],
+  hostAssignments: {},
 };
 
 export const STARTER_APPS = ['sonarr', 'radarr', 'prowlarr', 'qbittorrent'];

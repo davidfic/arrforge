@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import type { WizardState, WizardAction } from '../types';
-import { getAppById } from '../data/apps';
+import { getAppByIdWithCustom } from '../utils/appLookup';
 import { ComposePreview } from '../components/ComposePreview';
 import { buildZipBlob, buildComposeBlob } from '../generators/zip';
 import { ImportExport } from '../components/ImportExport';
@@ -49,7 +49,7 @@ export function ReviewStep({ state, dispatch, onReset }: ReviewStepProps) {
         <h3 className="text-sm font-medium text-theme-text-secondary mb-3">Selected Apps</h3>
         <div className="flex flex-wrap gap-2">
           {state.selectedApps.map((appId) => {
-            const app = getAppById(appId);
+            const app = getAppByIdWithCustom(appId, state.customApps);
             if (!app) return null;
             return (
               <span

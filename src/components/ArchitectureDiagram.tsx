@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import type { WizardState, AppCategory } from '../types';
 import { CATEGORY_ORDER } from '../types';
-import { getAppsByCategory } from '../data/apps';
+import { getAppsByCategoryWithCustom } from '../utils/appLookup';
 import { getActiveConnections, type ConnectionType } from '../data/connections';
 
 interface ArchitectureDiagramProps {
@@ -18,12 +18,23 @@ const CONNECTION_COLORS: Record<ConnectionType, string> = {
   'quality-profile': '#eab308',
 };
 
+const HOST_COLORS = [
+  '#6366f1', // indigo
+  '#14b8a6', // teal
+  '#f59e0b', // amber
+  '#ef4444', // red
+  '#8b5cf6', // violet
+  '#10b981', // emerald
+];
+
 const NODE_W = 130;
 const NODE_H = 36;
 const COL_GAP = 180;
 const ROW_GAP = 52;
 const PAD_X = 40;
 const PAD_Y = 60;
+const HOST_PAD = 16;
+const HOST_LABEL_H = 22;
 
 interface NodePos {
   id: string;
@@ -35,13 +46,14 @@ interface NodePos {
 
 export function ArchitectureDiagram({ state }: ArchitectureDiagramProps) {
   const connections = getActiveConnections(state.selectedApps);
+  const isMultiHost = state.multiHost && state.hosts.length > 1;
 
-  const { nodes, width, height } = useMemo(() => {
+  const { nodes, width, height, hostGroups } = useMemo(() => {
     const selectedSet = new Set(state.selectedApps);
     const columns: { category: AppCategory; apps: { id: string; name: string }[] }[] = [];
 
     for (const cat of CATEGORY_ORDER) {
-      const catApps = getAppsByCategory(cat).filter((a) => selectedSet.has(a.id));
+      const catApps = getAppsByCategoryWithCustom(cat, state.customApps).filter((a) => selectedSet.has(a.id));
       if (catApps.length > 0) {
         columns.push({ category: cat, apps: catApps.map((a) => ({ id: a.id, name: a.name })) });
       }
@@ -67,14 +79,64 @@ export function ArchitectureDiagram({ state }: ArchitectureDiagramProps) {
     const w = PAD_X * 2 + columns.length * NODE_W + (columns.length - 1) * COL_GAP;
     const h = PAD_Y * 2 + maxRows * NODE_H + (maxRows - 1) * ROW_GAP;
 
-    return { nodes: nodeList, width: Math.max(w, 400), height: Math.max(h, 200) };
-  }, [state.selectedApps]);
+    // Build host groups for multi-host mode
+    let groups: { hostId: string; hostName: string; colorIdx: number; minX: number; minY: number; maxX: number; maxY: number }[] = [];
+    if (isMultiHost) {
+      const nodeMap = new Map<string, NodePos>();
+      for (const n of nodeList) nodeMap.set(n.id, n);
+
+      for (let i = 0; i < state.hosts.length; i++) {
+        const host = state.hosts[i];
+        const hostApps = state.selectedApps.filter((appId) => {
+          const assigned = state.hostAssignments[appId];
+          return assigned === host.id || (!assigned && host.id === state.hosts[0]?.id);
+        });
+
+        const hostNodes = hostApps.map((id) => nodeMap.get(id)).filter(Boolean) as NodePos[];
+        if (hostNodes.length === 0) continue;
+
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        for (const n of hostNodes) {
+          minX = Math.min(minX, n.x);
+          minY = Math.min(minY, n.y);
+          maxX = Math.max(maxX, n.x + NODE_W);
+          maxY = Math.max(maxY, n.y + NODE_H);
+        }
+
+        groups.push({
+          hostId: host.id,
+          hostName: host.name,
+          colorIdx: i,
+          minX: minX - HOST_PAD,
+          minY: minY - HOST_PAD - HOST_LABEL_H,
+          maxX: maxX + HOST_PAD,
+          maxY: maxY + HOST_PAD,
+        });
+      }
+    }
+
+    return { nodes: nodeList, width: Math.max(w, 400), height: Math.max(h, 200), hostGroups: groups };
+  }, [state.selectedApps, state.customApps, isMultiHost, state.hosts, state.hostAssignments]);
 
   const nodeMap = useMemo(() => {
     const map = new Map<string, NodePos>();
     for (const n of nodes) map.set(n.id, n);
     return map;
   }, [nodes]);
+
+  // Build a set of cross-host connections for styling
+  const crossHostEdges = useMemo(() => {
+    if (!isMultiHost) return new Set<string>();
+    const set = new Set<string>();
+    for (const conn of connections) {
+      const fromHost = state.hostAssignments[conn.from] || state.hosts[0]?.id;
+      const toHost = state.hostAssignments[conn.to] || state.hosts[0]?.id;
+      if (fromHost !== toHost) {
+        set.add(`${conn.from}->${conn.to}`);
+      }
+    }
+    return set;
+  }, [isMultiHost, connections, state.hostAssignments, state.hosts]);
 
   if (nodes.length < 2 || connections.length === 0) {
     return (
@@ -104,12 +166,13 @@ export function ArchitectureDiagram({ state }: ArchitectureDiagramProps) {
       <div className="p-3 border-b border-theme-border-subtle">
         <h3 className="text-sm font-medium text-theme-text-secondary">Architecture</h3>
       </div>
-      <div className="overflow-x-auto p-4">
+      <div className="overflow-x-auto scrollbar-hide p-4" style={{ minWidth: 0 }}>
         <svg
-          width={width}
+          width="100%"
           height={height}
           viewBox={`0 0 ${width} ${height}`}
           className="block mx-auto"
+          style={{ minWidth: `${Math.min(width, 400)}px` }}
         >
           <defs>
             {usedTypes.map((type) => (
@@ -126,6 +189,37 @@ export function ArchitectureDiagram({ state }: ArchitectureDiagramProps) {
               </marker>
             ))}
           </defs>
+
+          {/* Host grouping rectangles */}
+          {hostGroups.map((group) => {
+            const color = HOST_COLORS[group.colorIdx % HOST_COLORS.length];
+            return (
+              <g key={group.hostId}>
+                <rect
+                  x={group.minX}
+                  y={group.minY}
+                  width={group.maxX - group.minX}
+                  height={group.maxY - group.minY}
+                  rx={10}
+                  fill="none"
+                  stroke={color}
+                  strokeWidth={1.5}
+                  strokeDasharray="6 3"
+                  strokeOpacity={0.6}
+                />
+                <text
+                  x={group.minX + 8}
+                  y={group.minY + 14}
+                  fill={color}
+                  fontSize={11}
+                  fontWeight="600"
+                  fontFamily="system-ui, sans-serif"
+                >
+                  {group.hostName}
+                </text>
+              </g>
+            );
+          })}
 
           {/* Edges */}
           {uniqueConnections.map((conn, i) => {
@@ -144,6 +238,7 @@ export function ArchitectureDiagram({ state }: ArchitectureDiagramProps) {
             const ex = goingLeft ? to.x + NODE_W : x2;
 
             const dx = (ex - sx) * 0.4;
+            const isCrossHost = crossHostEdges.has(`${conn.from}->${conn.to}`);
 
             return (
               <path
@@ -153,6 +248,7 @@ export function ArchitectureDiagram({ state }: ArchitectureDiagramProps) {
                 stroke={CONNECTION_COLORS[conn.type]}
                 strokeWidth={1.5}
                 strokeOpacity={0.6}
+                strokeDasharray={isCrossHost ? '5 3' : undefined}
                 markerEnd={`url(#arrow-${conn.type})`}
               />
             );
@@ -198,6 +294,15 @@ export function ArchitectureDiagram({ state }: ArchitectureDiagramProps) {
             {type.replace('-', ' ')}
           </div>
         ))}
+        {isMultiHost && (
+          <div className="flex items-center gap-1.5">
+            <span
+              className="w-3 h-0.5 inline-block border-t border-dashed"
+              style={{ borderColor: 'var(--color-text-muted)' }}
+            />
+            cross-host
+          </div>
+        )}
       </div>
     </div>
   );

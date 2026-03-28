@@ -76,12 +76,76 @@ function reducer(state: WizardState, action: WizardAction): WizardState {
       return { ...state, includeVpnCompose: !state.includeVpnCompose };
     case 'SET_GPU_TYPE':
       return { ...state, gpuType: action.gpuType };
+    case 'REORDER_APPS':
+      return { ...state, selectedApps: action.appIds };
     case 'TOGGLE_SETUP_TASK': {
       const tasks = state.completedSetupTasks.includes(action.taskId)
         ? state.completedSetupTasks.filter((id) => id !== action.taskId)
         : [...state.completedSetupTasks, action.taskId];
       return { ...state, completedSetupTasks: tasks };
     }
+    case 'ADD_CUSTOM_APP':
+      return {
+        ...state,
+        customApps: [...state.customApps, action.app],
+        selectedApps: [...state.selectedApps, action.app.id],
+      };
+    case 'UPDATE_CUSTOM_APP':
+      return {
+        ...state,
+        customApps: state.customApps.map((a) => (a.id === action.appId ? action.app : a)),
+      };
+    case 'REMOVE_CUSTOM_APP': {
+      const { [action.appId]: _, ...restConfigs } = state.appConfigs;
+      return {
+        ...state,
+        customApps: state.customApps.filter((a) => a.id !== action.appId),
+        selectedApps: state.selectedApps.filter((id) => id !== action.appId),
+        appConfigs: restConfigs,
+      };
+    }
+    case 'TOGGLE_MULTI_HOST': {
+      const enabling = !state.multiHost;
+      if (enabling && state.hosts.length === 0) {
+        return {
+          ...state,
+          multiHost: true,
+          hosts: [{ id: 'host-1', name: 'Default', ip: 'localhost' }],
+        };
+      }
+      if (!enabling) {
+        return { ...state, multiHost: false, hostAssignments: {} };
+      }
+      return { ...state, multiHost: enabling };
+    }
+    case 'ADD_HOST':
+      return { ...state, hosts: [...state.hosts, action.host] };
+    case 'UPDATE_HOST':
+      return {
+        ...state,
+        hosts: state.hosts.map((h) =>
+          h.id === action.hostId ? { ...h, ...action.updates } : h,
+        ),
+      };
+    case 'REMOVE_HOST': {
+      const remaining = state.hosts.filter((h) => h.id !== action.hostId);
+      const fallbackHosts = remaining.length > 0
+        ? remaining
+        : [{ id: 'host-1', name: 'Default', ip: 'localhost' }];
+      const fallbackId = fallbackHosts[0].id;
+      const updatedAssignments = { ...state.hostAssignments };
+      for (const [appId, hostId] of Object.entries(updatedAssignments)) {
+        if (hostId === action.hostId) {
+          updatedAssignments[appId] = fallbackId;
+        }
+      }
+      return { ...state, hosts: fallbackHosts, hostAssignments: updatedAssignments };
+    }
+    case 'ASSIGN_APP_TO_HOST':
+      return {
+        ...state,
+        hostAssignments: { ...state.hostAssignments, [action.appId]: action.hostId },
+      };
     case 'IMPORT_STATE':
       return { ...DEFAULT_STATE, ...action.state, step: state.step };
     case 'RESET':

@@ -31,9 +31,9 @@ export function StackGallery({ dispatch, onClose }: StackGalleryProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-theme-bg-base border border-theme-border rounded-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden flex flex-col">
+      <div className="relative bg-theme-bg-base border-0 sm:border border-theme-border rounded-none sm:rounded-2xl max-w-4xl w-full h-full sm:h-auto sm:max-h-[85vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="p-6 border-b border-theme-border-subtle shrink-0">
           <div className="flex items-center justify-between mb-4">

@@ -1,5 +1,5 @@
 import type { WizardState, AppConfig, AppDefinition } from '../types';
-import { getAppById } from '../data/apps';
+import { getAppByIdWithCustom } from '../utils/appLookup';
 import { getConnectionsFrom } from '../data/connections';
 
 function resolveImage(app: AppDefinition, config?: AppConfig): string {
@@ -37,7 +37,7 @@ export function generateCompose(state: WizardState): string {
   lines.push('services:');
 
   for (const appId of state.selectedApps) {
-    const app = getAppById(appId);
+    const app = getAppByIdWithCustom(appId, state.customApps);
     if (!app) continue;
 
     const config = state.appConfigs[appId];
@@ -60,14 +60,14 @@ export function generateCompose(state: WizardState): string {
     const deps = getConnectionsFrom(appId, state.selectedApps).filter((c) => c.dependsOn);
     const depNames = [...new Set(deps.map((d) => {
       const depConfig = state.appConfigs[d.to];
-      const depApp = getAppById(d.to);
+      const depApp = getAppByIdWithCustom(d.to, state.customApps);
       return depApp ? resolveContainerName(depApp, depConfig) : d.to;
     }))];
 
     if (depNames.length > 0) {
       lines.push(`    depends_on:`);
       for (const dep of deps) {
-        const depApp = getAppById(dep.to);
+        const depApp = getAppByIdWithCustom(dep.to, state.customApps);
         const depConfig = state.appConfigs[dep.to];
         const depName = depApp ? resolveContainerName(depApp, depConfig) : dep.to;
         if (depApp?.healthcheck) {

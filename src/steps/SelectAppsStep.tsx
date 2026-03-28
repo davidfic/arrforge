@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import type { WizardState, WizardAction } from '../types';
+import type { WizardState, WizardAction, AppDefinition } from '../types';
 import { CATEGORY_ORDER, CATEGORY_LABELS } from '../types';
-import { getAppsByCategory } from '../data/apps';
 import { CategoryGroup } from '../components/CategoryGroup';
 import { getActiveConflicts } from '../data/conflicts';
+import { getAppsByCategoryWithCustom } from '../utils/appLookup';
+import { CustomAppForm } from '../components/CustomAppForm';
 
 interface SelectAppsStepProps {
   state: WizardState;
@@ -14,8 +15,20 @@ export function SelectAppsStep({ state, dispatch }: SelectAppsStepProps) {
   const canContinue = state.selectedApps.length > 0;
   const conflicts = getActiveConflicts(state.selectedApps);
   const [dismissedConflicts, setDismissedConflicts] = useState<Set<string>>(new Set());
+  const [showCustomForm, setShowCustomForm] = useState(false);
+  const [editingApp, setEditingApp] = useState<AppDefinition | undefined>(undefined);
 
   const visibleConflicts = conflicts.filter((c) => !dismissedConflicts.has(c.id));
+
+  function handleOpenEdit(app: AppDefinition) {
+    setEditingApp(app);
+    setShowCustomForm(true);
+  }
+
+  function handleCloseForm() {
+    setShowCustomForm(false);
+    setEditingApp(undefined);
+  }
 
   return (
     <div>
@@ -52,19 +65,62 @@ export function SelectAppsStep({ state, dispatch }: SelectAppsStepProps) {
 
       <div className="space-y-8">
         {CATEGORY_ORDER.map((category) => {
-          const categoryApps = getAppsByCategory(category);
+          const categoryApps = getAppsByCategoryWithCustom(category, state.customApps);
+          if (category === 'custom' && categoryApps.length === 0) return null;
           if (categoryApps.length === 0) return null;
           return (
-            <CategoryGroup
-              key={category}
-              label={CATEGORY_LABELS[category]}
-              apps={categoryApps}
-              selectedApps={state.selectedApps}
-              onToggleApp={(appId) => dispatch({ type: 'TOGGLE_APP', appId })}
-            />
+            <div key={category}>
+              <CategoryGroup
+                label={CATEGORY_LABELS[category]}
+                apps={categoryApps}
+                selectedApps={state.selectedApps}
+                onToggleApp={(appId) => dispatch({ type: 'TOGGLE_APP', appId })}
+              />
+              {category === 'custom' && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {categoryApps.map((app) => (
+                    <button
+                      key={app.id}
+                      onClick={() => handleOpenEdit(app)}
+                      className="text-xs px-2 py-1 rounded bg-theme-bg-elevated border border-theme-border-subtle text-theme-text-secondary hover:text-theme-text-primary transition-colors"
+                    >
+                      Edit {app.name}
+                    </button>
+                  ))}
+                  {categoryApps.map((app) => (
+                    <button
+                      key={`remove-${app.id}`}
+                      onClick={() => dispatch({ type: 'REMOVE_CUSTOM_APP', appId: app.id })}
+                      className="text-xs px-2 py-1 rounded bg-theme-bg-elevated border border-red-500/30 text-red-400 hover:text-red-300 transition-colors"
+                    >
+                      Remove {app.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           );
         })}
       </div>
+
+      {/* Add Custom App button */}
+      <div className="mt-8">
+        <button
+          onClick={() => setShowCustomForm(true)}
+          className="px-4 py-2 rounded-lg text-sm font-medium bg-theme-bg-surface border border-theme-border text-theme-text-secondary hover:text-theme-text-primary hover:border-theme-accent transition-colors"
+        >
+          + Add Custom App
+        </button>
+      </div>
+
+      {/* Custom App Form modal */}
+      {showCustomForm && (
+        <CustomAppForm
+          dispatch={dispatch}
+          onClose={handleCloseForm}
+          editApp={editingApp}
+        />
+      )}
 
       <div className="flex justify-between items-center mt-8 pt-6 border-t border-theme-border-subtle">
         <button

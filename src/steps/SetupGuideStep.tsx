@@ -1,5 +1,7 @@
 import type { WizardState, WizardAction } from '../types';
-import { generateSetupTasks } from '../data/setupTasks';
+import { generateSetupTasks, getTasksByPhase, PHASE_LABELS, type TaskPhase } from '../data/setupTasks';
+import { CollapsibleSection } from '../components/CollapsibleSection';
+import { CopyCommand } from '../components/CopyCommand';
 
 interface SetupGuideStepProps {
   state: WizardState;
@@ -8,7 +10,8 @@ interface SetupGuideStepProps {
 }
 
 export function SetupGuideStep({ state, dispatch, onReset }: SetupGuideStepProps) {
-  const tasks = generateSetupTasks(state.selectedApps);
+  const tasks = generateSetupTasks(state);
+  const phaseMap = getTasksByPhase(tasks);
   const completed = state.completedSetupTasks;
   const progress = tasks.length > 0 ? Math.round((completed.length / tasks.length) * 100) : 0;
 
@@ -37,68 +40,99 @@ export function SetupGuideStep({ state, dispatch, onReset }: SetupGuideStepProps
         </div>
       </div>
 
-      {/* Task list */}
-      <div className="space-y-2">
-        {tasks.map((task) => {
-          const isDone = completed.includes(task.id);
-          return (
-            <div
-              key={task.id}
-              className={`p-4 rounded-lg border transition-colors ${
-                isDone
-                  ? 'bg-green-900/20 border-green-800/50'
-                  : 'bg-theme-bg-surface border-theme-border-subtle'
-              }`}
-            >
-              <div className="flex items-start gap-3">
-                <button
-                  onClick={() => dispatch({ type: 'TOGGLE_SETUP_TASK', taskId: task.id })}
-                  className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors ${
+      {/* Phase sections */}
+      {([...phaseMap.entries()] as [TaskPhase, typeof tasks][]).map(([phase, phaseTasks]) => {
+        const phaseCompleted = phaseTasks.filter((t) => completed.includes(t.id)).length;
+        return (
+          <CollapsibleSection
+            key={phase}
+            title={PHASE_LABELS[phase]}
+            count={phaseTasks.length}
+            completedCount={phaseCompleted}
+            defaultOpen={phaseCompleted < phaseTasks.length}
+            variant={phase === 'prerequisites' ? 'warning' : 'default'}
+          >
+            {phaseTasks.map((task) => {
+              const isDone = completed.includes(task.id);
+              return (
+                <div
+                  key={task.id}
+                  className={`p-4 rounded-lg border transition-colors ${
                     isDone
-                      ? 'bg-green-500 border-green-500 text-white'
-                      : 'border-theme-border hover:border-purple-500'
+                      ? 'bg-green-900/20 border-green-800/50'
+                      : task.warning
+                        ? 'bg-amber-900/10 border-amber-800/30'
+                        : 'bg-theme-bg-surface border-theme-border-subtle'
                   }`}
                 >
-                  {isDone && (
-                    <svg viewBox="0 0 12 12" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M2 6l3 3 5-5" />
-                    </svg>
-                  )}
-                </button>
+                  <div className="flex items-start gap-3">
+                    <button
+                      onClick={() => dispatch({ type: 'TOGGLE_SETUP_TASK', taskId: task.id })}
+                      className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors ${
+                        isDone
+                          ? 'bg-green-500 border-green-500 text-white'
+                          : task.warning
+                            ? 'border-amber-500 hover:border-amber-400'
+                            : 'border-theme-border hover:border-purple-500'
+                      }`}
+                    >
+                      {isDone && (
+                        <svg viewBox="0 0 12 12" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M2 6l3 3 5-5" />
+                        </svg>
+                      )}
+                    </button>
 
-                <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-medium ${isDone ? 'text-green-500 line-through' : 'text-theme-text-primary'}`}>
-                    {task.title}
-                  </p>
-                  <p className="text-xs text-theme-text-muted mt-1">{task.description}</p>
-                  <div className="flex items-center gap-3 mt-2">
-                    {task.url && (
-                      <a
-                        href={task.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs text-purple-500 hover:text-purple-400"
-                      >
-                        Open app
-                      </a>
-                    )}
-                    {task.docUrl && (
-                      <a
-                        href={task.docUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs text-purple-500 hover:text-purple-400"
-                      >
-                        Docs
-                      </a>
-                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm font-medium ${isDone ? 'text-green-500 line-through' : 'text-theme-text-primary'}`}>
+                        {task.title}
+                      </p>
+                      <p className="text-xs text-theme-text-muted mt-1">{task.description}</p>
+
+                      {/* Tips */}
+                      {task.tips && task.tips.length > 0 && (
+                        <div className="mt-2 p-2 rounded bg-blue-500/10 border border-blue-500/20">
+                          {task.tips.map((tip, i) => (
+                            <p key={i} className="text-xs text-blue-300">{tip}</p>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Commands */}
+                      {task.commands && task.commands.map((cmd, i) => (
+                        <CopyCommand key={i} command={cmd} />
+                      ))}
+
+                      <div className="flex items-center gap-3 mt-2">
+                        {task.url && (
+                          <a
+                            href={task.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-purple-500 hover:text-purple-400"
+                          >
+                            Open app
+                          </a>
+                        )}
+                        {task.docUrl && (
+                          <a
+                            href={task.docUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-purple-500 hover:text-purple-400"
+                          >
+                            Docs
+                          </a>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+              );
+            })}
+          </CollapsibleSection>
+        );
+      })}
 
       <div className="flex justify-between items-center mt-8 pt-6 border-t border-theme-border-subtle">
         <button

@@ -2,6 +2,8 @@ import type { WizardState, WizardAction } from '../types';
 import { PathConfigForm } from '../components/PathConfigForm';
 import { SettingsForm } from '../components/SettingsForm';
 import { AppConfigPanel } from '../components/AppConfigPanel';
+import { ReorderableAppList } from '../components/ReorderableAppList';
+import { HostAssignment } from '../components/HostAssignment';
 
 interface ConfigureStepProps {
   state: WizardState;
@@ -19,8 +21,10 @@ export function ConfigureStep({ state, dispatch }: ConfigureStepProps) {
       </div>
 
       <div className="max-w-xl">
+        <ReorderableAppList selectedApps={state.selectedApps} customApps={state.customApps} dispatch={dispatch} />
         <PathConfigForm state={state} dispatch={dispatch} />
         <SettingsForm state={state} dispatch={dispatch} />
+        {state.advancedMode && <HostAssignment state={state} dispatch={dispatch} />}
         <AppConfigPanel state={state} dispatch={dispatch} />
       </div>
 
