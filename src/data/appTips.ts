@@ -27,8 +27,11 @@ export const appTips: Record<string, AppTip> = {
   'nginx-proxy-manager': {
     firstRunTip: 'Default admin login: admin@example.com / changeme. Change these immediately.',
   },
+  flaresolverr: {
+    firstRunTip: 'FlareSolverr runs automatically. Add it as an Indexer Proxy in Prowlarr to bypass Cloudflare on public trackers.',
+  },
   prowlarr: {
-    firstRunTip: 'Set up authentication first, then add your indexer sites before connecting to other apps.',
+    firstRunTip: 'Set up authentication first, then add your indexer sites. Add FlareSolverr as an Indexer Proxy under Settings > Indexers if included.',
   },
   sonarr: {
     firstRunTip: 'Go to Settings > Media Management and set your root folder to /data/media/tv.',

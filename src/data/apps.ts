@@ -207,15 +207,15 @@ export const apps: AppDefinition[] = [
   {
     id: 'flaresolverr',
     name: 'FlareSolverr',
-    description: 'Proxy server to bypass Cloudflare protection for indexers',
+    description: 'Bypasses Cloudflare protection on public torrent trackers — required by most indexers',
     category: 'indexers',
     image: 'ghcr.io/flaresolverr/flaresolverr:latest',
     ports: [{ host: 8191, container: 8191, description: 'API' }],
     volumes: [],
     healthcheck: { test: 'curl -f http://localhost:8191 || exit 1' },
     docUrl: 'https://github.com/FlareSolverr/FlareSolverr',
-    starter: false,
-    notes: 'No persistent config needed — runs stateless.',
+    starter: true,
+    notes: 'No persistent config needed — runs stateless. Add as Indexer Proxy in Prowlarr.',
   },
 
   // ── Media Servers ──

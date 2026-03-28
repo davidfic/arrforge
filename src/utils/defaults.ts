@@ -22,7 +22,7 @@ export const DEFAULT_STATE: WizardState = {
   hostAssignments: {},
 };
 
-export const STARTER_APPS = ['sonarr', 'radarr', 'prowlarr', 'qbittorrent'];
+export const STARTER_APPS = ['sonarr', 'radarr', 'prowlarr', 'flaresolverr', 'qbittorrent'];
 
 export const TIMEZONES = [
   'America/New_York',

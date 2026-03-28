@@ -12,13 +12,13 @@ export const presets: PresetStack[] = [
     id: 'starter',
     name: 'Starter',
     description: 'The essentials for TV and movies with torrents',
-    appIds: ['sonarr', 'radarr', 'prowlarr', 'qbittorrent'],
+    appIds: ['sonarr', 'radarr', 'prowlarr', 'flaresolverr', 'qbittorrent'],
   },
   {
     id: 'power-user',
     name: 'Power User',
     description: 'All media types with quality automation and subtitles',
-    appIds: ['sonarr', 'radarr', 'lidarr', 'readarr', 'bazarr', 'prowlarr', 'qbittorrent', 'recyclarr'],
+    appIds: ['sonarr', 'radarr', 'lidarr', 'readarr', 'bazarr', 'prowlarr', 'flaresolverr', 'qbittorrent', 'recyclarr'],
   },
   {
     id: 'usenet-only',
@@ -30,19 +30,19 @@ export const presets: PresetStack[] = [
     id: 'minimal-movies',
     name: 'Minimal Movies',
     description: 'Just movie management with the basics',
-    appIds: ['radarr', 'prowlarr', 'qbittorrent'],
+    appIds: ['radarr', 'prowlarr', 'flaresolverr', 'qbittorrent'],
   },
   {
     id: 'plex-full',
     name: 'Plex Full Stack',
     description: 'Complete Plex setup with requests, monitoring, and automation',
-    appIds: ['sonarr', 'radarr', 'prowlarr', 'qbittorrent', 'plex', 'overseerr', 'tautulli', 'bazarr', 'recyclarr'],
+    appIds: ['sonarr', 'radarr', 'prowlarr', 'flaresolverr', 'qbittorrent', 'plex', 'overseerr', 'tautulli', 'bazarr', 'recyclarr'],
   },
   {
     id: 'jellyfin-stack',
     name: 'Jellyfin Stack',
     description: 'Fully open-source media stack with Jellyfin',
-    appIds: ['sonarr', 'radarr', 'prowlarr', 'qbittorrent', 'jellyfin', 'bazarr'],
+    appIds: ['sonarr', 'radarr', 'prowlarr', 'flaresolverr', 'qbittorrent', 'jellyfin', 'bazarr'],
   },
 ];
 

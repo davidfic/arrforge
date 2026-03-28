@@ -17,7 +17,7 @@ export const galleryStacks: GalleryStack[] = [
     name: 'The Minimalist',
     description: 'Just the essentials: grab TV shows and movies with the fewest moving parts.',
     tags: ['minimal', 'torrents', 'starter'],
-    appIds: ['sonarr', 'radarr', 'prowlarr', 'qbittorrent'],
+    appIds: ['sonarr', 'radarr', 'prowlarr', 'flaresolverr', 'qbittorrent'],
     difficulty: 'beginner',
   },
   {
@@ -33,7 +33,7 @@ export const galleryStacks: GalleryStack[] = [
     name: 'Plex Empire',
     description: 'Complete Plex ecosystem with requests, monitoring, subtitles, and quality automation.',
     tags: ['plex', 'automation', 'requests', 'monitoring'],
-    appIds: ['sonarr', 'radarr', 'prowlarr', 'qbittorrent', 'plex', 'overseerr', 'tautulli', 'bazarr', 'recyclarr'],
+    appIds: ['sonarr', 'radarr', 'prowlarr', 'flaresolverr', 'qbittorrent', 'plex', 'overseerr', 'tautulli', 'bazarr', 'recyclarr'],
     difficulty: 'advanced',
   },
   {
@@ -41,7 +41,7 @@ export const galleryStacks: GalleryStack[] = [
     name: 'Jellyfin Free Stack',
     description: 'Fully open-source from top to bottom. No accounts, no subscriptions.',
     tags: ['jellyfin', 'open-source', 'torrents'],
-    appIds: ['sonarr', 'radarr', 'prowlarr', 'qbittorrent', 'jellyfin', 'bazarr'],
+    appIds: ['sonarr', 'radarr', 'prowlarr', 'flaresolverr', 'qbittorrent', 'jellyfin', 'bazarr'],
     difficulty: 'beginner',
   },
   {
@@ -49,7 +49,7 @@ export const galleryStacks: GalleryStack[] = [
     name: 'Privacy First',
     description: 'Route all download traffic through a VPN. Includes gluetun overlay compose.',
     tags: ['vpn', 'privacy', 'torrents'],
-    appIds: ['sonarr', 'radarr', 'prowlarr', 'qbittorrent'],
+    appIds: ['sonarr', 'radarr', 'prowlarr', 'flaresolverr', 'qbittorrent'],
     config: { includeVpnCompose: true },
     difficulty: 'intermediate',
   },
@@ -58,7 +58,7 @@ export const galleryStacks: GalleryStack[] = [
     name: 'Book Worm',
     description: 'Focused on books and audiobooks. Readarr handles the library.',
     tags: ['books', 'minimal'],
-    appIds: ['readarr', 'prowlarr', 'qbittorrent'],
+    appIds: ['readarr', 'prowlarr', 'flaresolverr', 'qbittorrent'],
     difficulty: 'beginner',
   },
   {
@@ -66,7 +66,7 @@ export const galleryStacks: GalleryStack[] = [
     name: 'Music Collector',
     description: 'Automated music library management with Lidarr.',
     tags: ['music', 'minimal'],
-    appIds: ['lidarr', 'prowlarr', 'qbittorrent'],
+    appIds: ['lidarr', 'prowlarr', 'flaresolverr', 'qbittorrent'],
     difficulty: 'beginner',
   },
   {
@@ -74,7 +74,7 @@ export const galleryStacks: GalleryStack[] = [
     name: 'Luminarr Starter',
     description: 'Modern movie management with Luminarr instead of Radarr. Lightweight and fast.',
     tags: ['luminarr', 'movies', 'minimal'],
-    appIds: ['luminarr', 'sonarr', 'prowlarr', 'qbittorrent'],
+    appIds: ['luminarr', 'sonarr', 'prowlarr', 'flaresolverr', 'qbittorrent'],
     difficulty: 'beginner',
   },
   {
@@ -82,7 +82,7 @@ export const galleryStacks: GalleryStack[] = [
     name: 'Hybrid Downloader',
     description: 'Torrents and Usenet together for maximum availability. Best of both worlds.',
     tags: ['torrents', 'usenet', 'hybrid'],
-    appIds: ['sonarr', 'radarr', 'prowlarr', 'qbittorrent', 'sabnzbd'],
+    appIds: ['sonarr', 'radarr', 'prowlarr', 'flaresolverr', 'qbittorrent', 'sabnzbd'],
     difficulty: 'intermediate',
   },
   {
@@ -90,7 +90,7 @@ export const galleryStacks: GalleryStack[] = [
     name: 'The Kitchen Sink',
     description: 'Every app category covered. For the person who wants it all.',
     tags: ['complete', 'advanced'],
-    appIds: ['sonarr', 'radarr', 'lidarr', 'readarr', 'bazarr', 'prowlarr', 'qbittorrent', 'sabnzbd', 'plex', 'overseerr', 'tautulli', 'recyclarr', 'nginx-proxy-manager'],
+    appIds: ['sonarr', 'radarr', 'lidarr', 'readarr', 'bazarr', 'prowlarr', 'flaresolverr', 'qbittorrent', 'sabnzbd', 'plex', 'overseerr', 'tautulli', 'recyclarr', 'nginx-proxy-manager'],
     difficulty: 'advanced',
   },
 ];
