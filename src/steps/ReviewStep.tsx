@@ -81,7 +81,7 @@ export function ReviewStep({ state, dispatch, onReset }: ReviewStepProps) {
           <a
             href={zipUrl}
             download="media-stack.zip"
-            className="px-6 py-2.5 rounded-lg text-sm font-medium bg-purple-600 text-white hover:bg-purple-500 transition-colors inline-block cursor-pointer"
+            className="px-6 py-2.5 rounded-lg text-sm font-medium bg-theme-accent text-white hover:bg-theme-accent-hover transition-colors inline-block cursor-pointer"
           >
             Download ZIP
           </a>
@@ -121,7 +121,7 @@ export function ReviewStep({ state, dispatch, onReset }: ReviewStepProps) {
           </button>
           <button
             onClick={() => dispatch({ type: 'SET_STEP', step: 4 })}
-            className="px-6 py-2 rounded-lg text-sm font-medium bg-purple-600 text-white hover:bg-purple-500 transition-colors"
+            className="px-6 py-2 rounded-lg text-sm font-medium bg-theme-accent text-white hover:bg-theme-accent-hover transition-colors"
           >
             Next: Setup Guide
           </button>

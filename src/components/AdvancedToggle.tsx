@@ -15,7 +15,7 @@ export function AdvancedToggle({ enabled, onToggle }: AdvancedToggleProps) {
     >
       <span
         className={`w-9 h-5 rounded-full relative transition-colors flex-shrink-0 ${
-          enabled ? 'bg-purple-600' : 'bg-gray-400'
+          enabled ? 'bg-theme-accent' : 'bg-gray-400'
         }`}
       >
         <span

@@ -103,7 +103,7 @@ export function ComposePreview({ state }: ComposePreviewProps) {
             onClick={() => setActiveTab(tab.id)}
             className={`px-3 sm:px-4 py-2 text-xs whitespace-nowrap border-b-2 transition-colors ${
               activeTab === tab.id
-                ? 'border-purple-500 text-theme-accent-text bg-theme-bg-surface'
+                ? 'border-theme-accent text-theme-accent-text bg-theme-bg-surface'
                 : 'border-transparent text-theme-text-muted hover:text-theme-text-secondary'
             }`}
           >

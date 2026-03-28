@@ -70,7 +70,7 @@ export function AppConfigPanel({ state, dispatch }: AppConfigPanelProps) {
             >
               <span className="text-theme-text-primary font-medium">
                 {app.name}
-                {hasCustomization && <span className="ml-2 text-xs text-purple-500">customized</span>}
+                {hasCustomization && <span className="ml-2 text-xs text-theme-accent-text">customized</span>}
               </span>
               <span className="text-gray-400 text-xs">{isExpanded ? '\u25B2' : '\u25BC'}</span>
             </button>
@@ -131,7 +131,7 @@ export function AppConfigPanel({ state, dispatch }: AppConfigPanelProps) {
                   ))}
                   <button
                     onClick={() => addEnvVar(appId)}
-                    className="text-xs text-purple-500 hover:text-purple-400 mt-1"
+                    className="text-xs text-theme-accent-text hover:text-theme-accent-text mt-1"
                   >
                     + Add variable
                   </button>

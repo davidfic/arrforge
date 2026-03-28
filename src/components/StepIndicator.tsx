@@ -30,7 +30,7 @@ export function StepIndicator({ currentStep, maxStep, onStepClick }: StepIndicat
               <span
                 className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-[10px] sm:text-xs font-medium ${
                   isCurrent
-                    ? 'bg-purple-600 text-white'
+                    ? 'bg-theme-accent text-white'
                     : isClickable
                       ? 'bg-theme-accent-subtle text-theme-accent-text'
                       : 'bg-theme-bg-surface text-theme-text-muted'

@@ -46,7 +46,7 @@ export function PathConfigForm({ state, dispatch }: PathConfigFormProps) {
           placeholder="./data"
         />
         <p className="text-xs text-theme-text-muted mt-1">
-          Uses the <a href="https://trash-guides.info/Hardlinks/How-to-setup-for/Docker/" target="_blank" rel="noopener noreferrer" className="text-purple-500 hover:text-purple-400">TRaSH Guides recommended folder structure</a>
+          Uses the <a href="https://trash-guides.info/Hardlinks/How-to-setup-for/Docker/" target="_blank" rel="noopener noreferrer" className="text-theme-accent-text hover:text-theme-accent-text">TRaSH Guides recommended folder structure</a>
         </p>
       </div>
 
@@ -105,7 +105,7 @@ export function PathConfigForm({ state, dispatch }: PathConfigFormProps) {
         <button
           onClick={() => dispatch({ type: 'TOGGLE_VPN' })}
           className={`w-12 h-6 sm:w-10 sm:h-5 rounded-full relative flex-shrink-0 transition-colors ${
-            state.includeVpnCompose ? 'bg-purple-600' : 'bg-gray-400'
+            state.includeVpnCompose ? 'bg-theme-accent' : 'bg-gray-400'
           }`}
         >
           <span
@@ -147,7 +147,7 @@ export function PathConfigForm({ state, dispatch }: PathConfigFormProps) {
           </div>
           {state.gpuType === 'nvidia' && (
             <p className="text-xs text-theme-text-muted mt-1">
-              Requires <a href="https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html" target="_blank" rel="noopener noreferrer" className="text-purple-500 hover:text-purple-400">NVIDIA Container Toolkit</a> installed on the host
+              Requires <a href="https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html" target="_blank" rel="noopener noreferrer" className="text-theme-accent-text hover:text-theme-accent-text">NVIDIA Container Toolkit</a> installed on the host
             </p>
           )}
         </div>

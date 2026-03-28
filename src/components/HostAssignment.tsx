@@ -28,7 +28,7 @@ export function HostAssignment({ state, dispatch }: HostAssignmentProps) {
         <button
           onClick={() => dispatch({ type: 'TOGGLE_MULTI_HOST' })}
           className={`w-12 h-6 sm:w-10 sm:h-5 rounded-full relative flex-shrink-0 transition-colors ${
-            state.multiHost ? 'bg-purple-600' : 'bg-gray-400'
+            state.multiHost ? 'bg-theme-accent' : 'bg-gray-400'
           }`}
         >
           <span
@@ -97,7 +97,7 @@ export function HostAssignment({ state, dispatch }: HostAssignmentProps) {
                   },
                 })
               }
-              className="mt-2 text-xs text-purple-500 hover:text-purple-400 transition-colors"
+              className="mt-2 text-xs text-theme-accent-text hover:text-theme-accent-text transition-colors"
             >
               + Add Host
             </button>

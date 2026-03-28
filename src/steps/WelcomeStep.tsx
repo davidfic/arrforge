@@ -65,7 +65,7 @@ export function WelcomeStep({ dispatch, onOpenGallery }: WelcomeStepProps) {
       <div className="mb-6">
         <button
           onClick={onOpenGallery}
-          className="text-sm text-purple-500 hover:text-purple-400 transition-colors"
+          className="text-sm text-theme-accent-text hover:text-theme-accent-text transition-colors"
         >
           Browse the Stack Gallery for more configurations
         </button>
@@ -78,7 +78,7 @@ export function WelcomeStep({ dispatch, onOpenGallery }: WelcomeStepProps) {
             href="https://docs.docker.com/engine/install/"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-purple-500 hover:text-purple-400"
+            className="text-theme-accent-text hover:text-theme-accent-text"
           >
             Linux install guide
           </a>
@@ -86,7 +86,7 @@ export function WelcomeStep({ dispatch, onOpenGallery }: WelcomeStepProps) {
             href="https://docs.docker.com/desktop/install/mac-install/"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-purple-500 hover:text-purple-400"
+            className="text-theme-accent-text hover:text-theme-accent-text"
           >
             macOS install guide
           </a>

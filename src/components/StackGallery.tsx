@@ -104,7 +104,7 @@ export function StackGallery({ dispatch, onClose }: StackGalleryProps) {
                 </div>
                 <button
                   onClick={() => handleUseStack(stack)}
-                  className="w-full py-1.5 rounded-lg text-xs font-medium bg-purple-600 text-white hover:bg-purple-500 transition-colors"
+                  className="w-full py-1.5 rounded-lg text-xs font-medium bg-theme-accent text-white hover:bg-theme-accent-hover transition-colors"
                 >
                   Use this stack
                 </button>

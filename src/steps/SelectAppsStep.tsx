@@ -134,7 +134,7 @@ export function SelectAppsStep({ state, dispatch }: SelectAppsStepProps) {
           disabled={!canContinue}
           className={`px-6 py-2 rounded-lg text-sm font-medium transition-colors ${
             canContinue
-              ? 'bg-purple-600 text-white hover:bg-purple-500'
+              ? 'bg-theme-accent text-white hover:bg-theme-accent-hover'
               : 'bg-theme-bg-surface text-theme-text-muted cursor-not-allowed'
           }`}
         >

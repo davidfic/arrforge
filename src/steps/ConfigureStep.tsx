@@ -37,7 +37,7 @@ export function ConfigureStep({ state, dispatch }: ConfigureStepProps) {
         </button>
         <button
           onClick={() => dispatch({ type: 'SET_STEP', step: 3 })}
-          className="px-6 py-2 rounded-lg text-sm font-medium bg-purple-600 text-white hover:bg-purple-500 transition-colors"
+          className="px-6 py-2 rounded-lg text-sm font-medium bg-theme-accent text-white hover:bg-theme-accent-hover transition-colors"
         >
           Next: Review & Download
         </button>

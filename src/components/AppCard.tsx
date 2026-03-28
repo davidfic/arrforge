@@ -36,7 +36,7 @@ export function AppCard({ app, selected, onToggle }: AppCardProps) {
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="text-purple-500 hover:text-purple-400"
+              className="text-theme-accent-text hover:text-theme-accent-text"
             >
               Docs
             </a>
@@ -46,7 +46,7 @@ export function AppCard({ app, selected, onToggle }: AppCardProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-purple-500 hover:text-purple-400"
+                className="text-theme-accent-text hover:text-theme-accent-text"
               >
                 TRaSH Guide
               </a>
@@ -56,7 +56,7 @@ export function AppCard({ app, selected, onToggle }: AppCardProps) {
         <div
           className={`w-6 h-6 sm:w-5 sm:h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors ${
             selected
-              ? 'bg-purple-600 border-purple-600 text-white'
+              ? 'bg-theme-accent border-theme-accent text-white'
               : 'border-theme-border'
           }`}
         >

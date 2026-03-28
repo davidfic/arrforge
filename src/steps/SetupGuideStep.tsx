@@ -34,7 +34,7 @@ export function SetupGuideStep({ state, dispatch, onReset }: SetupGuideStepProps
         </div>
         <div className="h-2 bg-theme-bg-surface rounded-full overflow-hidden">
           <div
-            className="h-full bg-purple-600 rounded-full transition-all duration-300"
+            className="h-full bg-theme-accent rounded-full transition-all duration-300"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -73,7 +73,7 @@ export function SetupGuideStep({ state, dispatch, onReset }: SetupGuideStepProps
                           ? 'bg-green-500 border-green-500 text-white'
                           : task.warning
                             ? 'border-amber-500 hover:border-amber-400'
-                            : 'border-theme-border hover:border-purple-500'
+                            : 'border-theme-border hover:border-theme-accent'
                       }`}
                     >
                       {isDone && (
@@ -109,7 +109,7 @@ export function SetupGuideStep({ state, dispatch, onReset }: SetupGuideStepProps
                             href={task.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs text-purple-500 hover:text-purple-400"
+                            className="text-xs text-theme-accent-text hover:text-theme-accent-text"
                           >
                             Open app
                           </a>
@@ -119,7 +119,7 @@ export function SetupGuideStep({ state, dispatch, onReset }: SetupGuideStepProps
                             href={task.docUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs text-purple-500 hover:text-purple-400"
+                            className="text-xs text-theme-accent-text hover:text-theme-accent-text"
                           >
                             Docs
                           </a>

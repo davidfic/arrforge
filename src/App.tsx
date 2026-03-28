@@ -60,7 +60,7 @@ export default function App() {
       theme={theme}
     >
       {sharedConfig && (
-        <div className="mb-6 p-4 bg-purple-500/10 border border-purple-500/30 rounded-xl flex items-center justify-between gap-4">
+        <div className="mb-6 p-4 bg-theme-accent-subtle border border-theme-accent/30 rounded-xl flex items-center justify-between gap-4">
           <div>
             <p className="text-sm font-medium text-theme-text-primary">Shared configuration detected</p>
             <p className="text-xs text-theme-text-muted">
@@ -74,7 +74,7 @@ export default function App() {
                 dispatch({ type: 'SET_STEP', step: 1 });
                 setSharedConfig(null);
               }}
-              className="px-4 py-1.5 rounded-lg text-xs font-medium bg-purple-600 text-white hover:bg-purple-500 transition-colors"
+              className="px-4 py-1.5 rounded-lg text-xs font-medium bg-theme-accent text-white hover:bg-theme-accent-hover transition-colors"
             >
               Load
             </button>

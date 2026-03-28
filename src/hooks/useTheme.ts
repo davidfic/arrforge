@@ -1,9 +1,10 @@
 import { useCallback, useEffect } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 
-export type Theme = 'light' | 'dark' | 'midnight' | 'nord' | 'dracula';
+export type Theme = 'steel' | 'light' | 'dark' | 'midnight' | 'nord' | 'dracula';
 
 export const THEMES: { id: Theme; label: string; bg: string; accent: string }[] = [
+  { id: 'steel', label: 'Steel', bg: '#0c1220', accent: '#3b82f6' },
   { id: 'light', label: 'Light', bg: '#ffffff', accent: '#a855f7' },
   { id: 'dark', label: 'Dark', bg: '#030712', accent: '#a855f7' },
   { id: 'midnight', label: 'Midnight', bg: '#0d1117', accent: '#a371f7' },
@@ -12,7 +13,7 @@ export const THEMES: { id: Theme; label: string; bg: string; accent: string }[] 
 ];
 
 export function useTheme() {
-  const [theme, setTheme] = useLocalStorage<Theme>('arrforge-theme', 'dark');
+  const [theme, setTheme] = useLocalStorage<Theme>('arrforge-theme', 'steel');
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;

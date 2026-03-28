@@ -41,7 +41,7 @@ export function ReorderableAppList({ selectedApps, customApps, dispatch }: Reord
                 isDragging
                   ? 'opacity-40 border-theme-accent bg-theme-accent-subtle'
                   : isOver
-                    ? 'border-purple-500 bg-purple-500/10'
+                    ? 'border-theme-accent bg-theme-accent-subtle'
                     : 'border-theme-border-subtle bg-theme-bg-surface hover:border-theme-border'
               }`}
             >
