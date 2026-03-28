@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import type { WizardState, AppCategory } from '../types';
-import { CATEGORY_ORDER, CATEGORY_LABELS } from '../types';
-import { getAppById, getAppsByCategory } from '../data/apps';
+import { CATEGORY_ORDER } from '../types';
+import { getAppsByCategory } from '../data/apps';
 import { getActiveConnections, type ConnectionType } from '../data/connections';
 
 interface ArchitectureDiagramProps {
