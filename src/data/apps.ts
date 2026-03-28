@@ -62,6 +62,21 @@ export const apps: AppDefinition[] = [
     starter: false,
   },
   {
+    id: 'luminarr',
+    name: 'Luminarr',
+    description: 'Modern movie collection manager — lightweight Radarr alternative written in Go',
+    category: 'media-management',
+    image: 'ghcr.io/luminarr/luminarr:latest',
+    ports: [{ host: 8282, container: 8282, description: 'Web UI' }],
+    volumes: [
+      { host: '${BASE_PATH}/media', container: '/data', description: 'Media root' },
+      { host: '${BASE_PATH}/config/luminarr', container: '/config', description: 'Config' },
+    ],
+    docUrl: 'https://github.com/luminarr/luminarr',
+    starter: false,
+    notes: 'Radarr API-compatible — works with Prowlarr, Overseerr, and Bazarr via the Radarr integration.',
+  },
+  {
     id: 'bazarr',
     name: 'Bazarr',
     description: 'Subtitle manager for Sonarr and Radarr',

@@ -92,6 +92,11 @@ export function generateCompose(state: WizardState): string {
       envLines.length = 0;
       envLines.push(`      - TZ=\${TZ}`);
     }
+    // luminarr manages its own user — only needs TZ
+    if (app.id === 'luminarr') {
+      envLines.length = 0;
+      envLines.push(`      - TZ=\${TZ}`);
+    }
 
     // Append custom env vars from per-app config
     if (config?.customEnv) {

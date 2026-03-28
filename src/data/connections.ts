@@ -33,6 +33,17 @@ export const connections: AppConnection[] = [
   { from: 'radarr', to: 'deluge', type: 'download-client', label: 'Download Client',
     setupInstructions: 'In Radarr, go to Settings → Download Clients → + → Deluge. Host: `deluge`, Port: `8112`. Default password: `deluge`.' },
 
+  { from: 'luminarr', to: 'qbittorrent', type: 'download-client', label: 'Download Client',
+    setupInstructions: 'In Luminarr, go to Settings → Download Clients → + → qBittorrent. Host: `qbittorrent`, Port: `8080`.' },
+  { from: 'luminarr', to: 'transmission', type: 'download-client', label: 'Download Client',
+    setupInstructions: 'In Luminarr, go to Settings → Download Clients → + → Transmission. Host: `transmission`, Port: `9091`.' },
+  { from: 'luminarr', to: 'sabnzbd', type: 'download-client', label: 'Download Client (Usenet)',
+    setupInstructions: 'In Luminarr, go to Settings → Download Clients → + → SABnzbd. Host: `sabnzbd`, Port: `8080`. Add your API key.' },
+  { from: 'luminarr', to: 'nzbget', type: 'download-client', label: 'Download Client (Usenet)',
+    setupInstructions: 'In Luminarr, go to Settings → Download Clients → + → NZBGet. Host: `nzbget`, Port: `6789`.' },
+  { from: 'luminarr', to: 'deluge', type: 'download-client', label: 'Download Client',
+    setupInstructions: 'In Luminarr, go to Settings → Download Clients → + → Deluge. Host: `deluge`, Port: `8112`. Default password: `deluge`.' },
+
   { from: 'lidarr', to: 'qbittorrent', type: 'download-client', label: 'Download Client',
     setupInstructions: 'In Lidarr, go to Settings → Download Clients → + → qBittorrent. Host: `qbittorrent`, Port: `8080`.' },
   { from: 'lidarr', to: 'transmission', type: 'download-client', label: 'Download Client',
@@ -56,6 +67,8 @@ export const connections: AppConnection[] = [
     setupInstructions: 'In Prowlarr, go to Settings → Apps → + → Sonarr. Prowlarr Server: `http://prowlarr:9696`, Sonarr Server: `http://sonarr:8989`. Add the Sonarr API key.' },
   { from: 'prowlarr', to: 'radarr', type: 'indexer', label: 'App Sync',
     setupInstructions: 'In Prowlarr, go to Settings → Apps → + → Radarr. Prowlarr Server: `http://prowlarr:9696`, Radarr Server: `http://radarr:7878`. Add the Radarr API key.' },
+  { from: 'prowlarr', to: 'luminarr', type: 'indexer', label: 'App Sync',
+    setupInstructions: 'In Prowlarr, go to Settings → Apps → + → Radarr. Prowlarr Server: `http://prowlarr:9696`, Radarr Server: `http://luminarr:8282`. Add the Luminarr API key. Luminarr is Radarr API-compatible.' },
   { from: 'prowlarr', to: 'lidarr', type: 'indexer', label: 'App Sync',
     setupInstructions: 'In Prowlarr, go to Settings → Apps → + → Lidarr. Prowlarr Server: `http://prowlarr:9696`, Lidarr Server: `http://lidarr:8686`. Add the Lidarr API key.' },
   { from: 'prowlarr', to: 'readarr', type: 'indexer', label: 'App Sync',
@@ -70,6 +83,8 @@ export const connections: AppConnection[] = [
     setupInstructions: 'In Bazarr, go to Settings → Sonarr. Address: `sonarr`, Port: `8989`. Add the Sonarr API key.' },
   { from: 'bazarr', to: 'radarr', type: 'subtitle', label: 'Movie Subtitles',
     setupInstructions: 'In Bazarr, go to Settings → Radarr. Address: `radarr`, Port: `7878`. Add the Radarr API key.' },
+  { from: 'bazarr', to: 'luminarr', type: 'subtitle', label: 'Movie Subtitles',
+    setupInstructions: 'In Bazarr, go to Settings → Radarr. Address: `luminarr`, Port: `8282`. Add the Luminarr API key. Luminarr is Radarr API-compatible.' },
 
   // ── Overseerr → Plex/Sonarr/Radarr ──
   { from: 'overseerr', to: 'plex', type: 'media-server', label: 'Media Server',
@@ -78,6 +93,8 @@ export const connections: AppConnection[] = [
     setupInstructions: 'In Overseerr, go to Settings → Services → + → Sonarr. Hostname: `sonarr`, Port: `8989`. Add the Sonarr API key.' },
   { from: 'overseerr', to: 'radarr', type: 'request', label: 'Movie Requests',
     setupInstructions: 'In Overseerr, go to Settings → Services → + → Radarr. Hostname: `radarr`, Port: `7878`. Add the Radarr API key.' },
+  { from: 'overseerr', to: 'luminarr', type: 'request', label: 'Movie Requests',
+    setupInstructions: 'In Overseerr, go to Settings → Services → + → Radarr. Hostname: `luminarr`, Port: `8282`. Add the Luminarr API key. Luminarr is Radarr API-compatible.' },
 
   // ── Tautulli → Plex ──
   { from: 'tautulli', to: 'plex', type: 'monitoring', label: 'Plex Monitoring',
