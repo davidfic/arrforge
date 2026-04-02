@@ -113,6 +113,13 @@ export function generateCompose(state: WizardState): string {
       }
     }
 
+    // NVIDIA GPU env vars must be merged into the single environment block
+    const MEDIA_SERVERS = ['plex', 'jellyfin', 'emby'];
+    if (state.gpuType === 'nvidia' && MEDIA_SERVERS.includes(app.id)) {
+      envLines.push(`      - NVIDIA_VISIBLE_DEVICES=all`);
+      envLines.push(`      - NVIDIA_DRIVER_CAPABILITIES=all`);
+    }
+
     if (envLines.length > 0) {
       lines.push(`    environment:`);
       lines.push(...envLines);
@@ -145,16 +152,12 @@ export function generateCompose(state: WizardState): string {
     }
 
     // GPU passthrough for media servers
-    const MEDIA_SERVERS = ['plex', 'jellyfin', 'emby'];
     if (state.gpuType !== 'none' && MEDIA_SERVERS.includes(app.id)) {
       if (state.gpuType === 'intel') {
         lines.push(`    devices:`);
         lines.push(`      - /dev/dri:/dev/dri`);
       } else if (state.gpuType === 'nvidia') {
         lines.push(`    runtime: nvidia`);
-        lines.push(`    environment:`);
-        lines.push(`      - NVIDIA_VISIBLE_DEVICES=all`);
-        lines.push(`      - NVIDIA_DRIVER_CAPABILITIES=all`);
       } else if (state.gpuType === 'vaapi') {
         lines.push(`    devices:`);
         lines.push(`      - /dev/dri/renderD128:/dev/dri/renderD128`);
