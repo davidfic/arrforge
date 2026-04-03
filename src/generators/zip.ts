@@ -6,11 +6,11 @@ import { generateReadme } from './readme';
 import { generateAdvanced } from './advanced';
 import { generateVpnCompose } from './vpn';
 import { generatePerHost } from './multihost';
-import { getRequiredDirs } from './folders';
+import { getRequiredDirs, getConfigDirs } from './folders';
+import { generateSetupScript } from './setup';
 
 function addDirsToZip(zip: JSZip, selectedApps: string[]) {
-  for (const dir of getRequiredDirs(selectedApps)) {
-    // JSZip creates directory entries when the path ends with /
+  for (const dir of [...getRequiredDirs(selectedApps), ...getConfigDirs(selectedApps)]) {
     zip.folder(dir);
   }
 }
@@ -28,6 +28,7 @@ export async function buildZipBlob(state: WizardState): Promise<Blob> {
       hostFolder.file('docker-compose.yml', host.compose);
       hostFolder.file('.env', host.env);
       hostFolder.file('README.md', host.readme);
+      hostFolder.file('setup.sh', generateSetupScript({ ...state, selectedApps: host.apps }));
       if (host.vpn) {
         hostFolder.file('docker-compose.vpn.yml', host.vpn);
       }
@@ -39,6 +40,7 @@ export async function buildZipBlob(state: WizardState): Promise<Blob> {
     folder.file('.env', generateEnv(state));
     folder.file('README.md', generateReadme(state));
     folder.file('ADVANCED.md', generateAdvanced(state));
+    folder.file('setup.sh', generateSetupScript(state));
 
     if (state.includeVpnCompose) {
       folder.file('docker-compose.vpn.yml', generateVpnCompose(state));
@@ -61,7 +63,7 @@ function encodeUTF8(str: string): Uint8Array {
   return new TextEncoder().encode(str);
 }
 
-function tarHeader(name: string, size: number, isDir: boolean): Uint8Array {
+function tarHeader(name: string, size: number, opts: { isDir?: boolean; executable?: boolean } = {}): Uint8Array {
   const header = new Uint8Array(512);
 
   // name (0-99)
@@ -69,7 +71,8 @@ function tarHeader(name: string, size: number, isDir: boolean): Uint8Array {
   header.set(nameBytes.subarray(0, 100), 0);
 
   // mode (100-107)
-  const mode = encodeUTF8(isDir ? '0000755\0' : '0000644\0');
+  const fileMode = opts.isDir ? '0000755\0' : opts.executable ? '0000755\0' : '0000644\0';
+  const mode = encodeUTF8(fileMode);
   header.set(mode, 100);
 
   // uid (108-115), gid (116-123)
@@ -85,7 +88,7 @@ function tarHeader(name: string, size: number, isDir: boolean): Uint8Array {
   header.set(encodeUTF8(mtime), 136);
 
   // typeflag (156)
-  header[156] = isDir ? 53 : 48; // '5' for dir, '0' for file
+  header[156] = opts.isDir ? 53 : 48; // '5' for dir, '0' for file
 
   // magic (257-262) "ustar\0"
   header.set(encodeUTF8('ustar\0'), 257);
@@ -103,19 +106,19 @@ function tarHeader(name: string, size: number, isDir: boolean): Uint8Array {
   return header;
 }
 
-function buildTarball(files: { name: string; content: string }[], dirs: string[]): Uint8Array {
+function buildTarball(files: { name: string; content: string; executable?: boolean }[], dirs: string[]): Uint8Array {
   const parts: Uint8Array[] = [];
 
   // Add directories first
   for (const dir of dirs) {
     const dirName = dir.endsWith('/') ? dir : dir + '/';
-    parts.push(tarHeader(dirName, 0, true));
+    parts.push(tarHeader(dirName, 0, { isDir: true }));
   }
 
   // Add files
   for (const file of files) {
     const data = encodeUTF8(file.content);
-    parts.push(tarHeader(file.name, data.length, false));
+    parts.push(tarHeader(file.name, data.length, { executable: file.executable }));
     parts.push(data);
     // Pad to 512-byte boundary
     const remainder = data.length % 512;
@@ -139,7 +142,7 @@ function buildTarball(files: { name: string; content: string }[], dirs: string[]
 
 export async function buildTgzBlob(state: WizardState): Promise<Blob> {
   const prefix = 'media-stack/';
-  const files: { name: string; content: string }[] = [];
+  const files: { name: string; content: string; executable?: boolean }[] = [];
   const dirs: string[] = [];
   const isMultiHost = state.multiHost && state.hosts.length > 1;
 
@@ -163,10 +166,11 @@ export async function buildTgzBlob(state: WizardState): Promise<Blob> {
       files.push({ name: hp + 'docker-compose.yml', content: host.compose });
       files.push({ name: hp + '.env', content: host.env });
       files.push({ name: hp + 'README.md', content: host.readme });
+      files.push({ name: hp + 'setup.sh', executable: true, content: generateSetupScript({ ...state, selectedApps: host.apps }) });
       if (host.vpn) {
         files.push({ name: hp + 'docker-compose.vpn.yml', content: host.vpn });
       }
-      for (const d of getRequiredDirs(host.apps)) {
+      for (const d of [...getRequiredDirs(host.apps), ...getConfigDirs(host.apps)]) {
         addDir(hp + d + '/');
       }
     }
@@ -176,12 +180,13 @@ export async function buildTgzBlob(state: WizardState): Promise<Blob> {
     files.push({ name: prefix + '.env', content: generateEnv(state) });
     files.push({ name: prefix + 'README.md', content: generateReadme(state) });
     files.push({ name: prefix + 'ADVANCED.md', content: generateAdvanced(state) });
+    files.push({ name: prefix + 'setup.sh', executable: true, content: generateSetupScript(state) });
 
     if (state.includeVpnCompose) {
       files.push({ name: prefix + 'docker-compose.vpn.yml', content: generateVpnCompose(state) });
     }
 
-    for (const d of getRequiredDirs(state.selectedApps)) {
+    for (const d of [...getRequiredDirs(state.selectedApps), ...getConfigDirs(state.selectedApps)]) {
       addDir(prefix + d + '/');
     }
   }

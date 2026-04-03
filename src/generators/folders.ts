@@ -16,7 +16,7 @@ const MEDIA_DIRS: MediaDir[] = [
   { name: 'music', label: 'Music library', apps: ['lidarr'] },
 ];
 
-/** Returns the list of directories that should be created based on selected apps. */
+/** Returns the list of data directories (downloads + media libraries) based on selected apps. */
 export function getRequiredDirs(selectedApps: string[]): string[] {
   const dirs: string[] = [];
   const hasTorrents = selectedApps.some((id) => TORRENT_CLIENTS.includes(id));
@@ -29,12 +29,15 @@ export function getRequiredDirs(selectedApps: string[]): string[] {
     dirs.push(`media/${dir.name}`);
   }
 
-  const configApps = selectedApps.map((id) => getAppById(id)).filter(Boolean);
-  for (const app of configApps) {
-    dirs.push(`config/${app!.id}`);
-  }
-
   return dirs;
+}
+
+/** Returns config directories for each selected app. */
+export function getConfigDirs(selectedApps: string[]): string[] {
+  return selectedApps
+    .map((id) => getAppById(id))
+    .filter(Boolean)
+    .map((app) => `config/${app!.id}`);
 }
 
 export function generateFolderGuide(state: WizardState): string {
@@ -75,38 +78,18 @@ export function generateFolderGuide(state: WizardState): string {
   lines.push('```');
   lines.push('');
 
-  // mkdir command
-  const mkdirParts: string[] = [];
-  if (hasTorrents) mkdirParts.push('torrents');
-  if (hasUsenet) mkdirParts.push('usenet');
-  if (activeMedia.length > 0) {
-    const mediaDirs = activeMedia.map((d) => d.name).join(',');
-    mkdirParts.push(activeMedia.length === 1 ? `media/${activeMedia[0].name}` : `media/{${mediaDirs}}`);
-  }
-  mkdirParts.push('config');
-
   lines.push('## Create directories');
   lines.push('');
+  lines.push('Run the included setup script to create all directories with correct ownership:');
+  lines.push('');
   lines.push('```bash');
-  if (mkdirParts.length === 1) {
-    lines.push(`mkdir -p ${bp}/${mkdirParts[0]}`);
-  } else {
-    lines.push(`mkdir -p ${bp}/{${mkdirParts.join(',')}}`);
-  }
+  lines.push(`./setup.sh`);
   lines.push('```');
   lines.push('');
-
-  // Config directories per selected app
-  const configApps = selected.map((id) => getAppById(id)).filter(Boolean);
-  if (configApps.length > 0) {
-    const configDirs = configApps.map((a) => a!.id).join(',');
-    lines.push('App config directories (created automatically by Docker, but you can pre-create):');
-    lines.push('');
-    lines.push('```bash');
-    lines.push(`mkdir -p ${bp}/config/{${configDirs}}`);
-    lines.push('```');
-    lines.push('');
-  }
+  lines.push('> **Important:** Run this before `docker compose up`. If Docker creates these');
+  lines.push('> directories first, they will be owned by root, which prevents some containers');
+  lines.push('> from writing to their config volumes.');
+  lines.push('');
 
   // Hardlinks explanation
   if ((hasTorrents || hasUsenet) && activeMedia.length > 0) {
