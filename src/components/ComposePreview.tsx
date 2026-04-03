@@ -6,6 +6,7 @@ import { generateReadme } from '../generators/readme';
 import { generateAdvanced } from '../generators/advanced';
 import { generateVpnCompose } from '../generators/vpn';
 import { generateFolderGuide } from '../generators/folders';
+import { generateConfigureScript } from '../generators/configure';
 import { generatePerHost } from '../generators/multihost';
 
 interface Tab {
@@ -30,6 +31,13 @@ const VPN_TAB: Tab = {
   generate: generateVpnCompose,
 };
 
+const CONFIGURE_TAB: Tab = {
+  id: 'configure',
+  label: 'configure.sh',
+  shortLabel: 'configure',
+  generate: generateConfigureScript,
+};
+
 interface ComposePreviewProps {
   state: WizardState;
 }
@@ -51,9 +59,12 @@ export function ComposePreview({ state }: ComposePreviewProps) {
   const activeHostOutput = perHostOutputs.find((h) => h.hostId === activeHostId);
 
   const tabs = useMemo(() => {
-    const baseTabs = state.includeVpnCompose ? [...TABS, VPN_TAB] : TABS;
+    const baseTabs = [...TABS];
+    const configureScript = generateConfigureScript(state);
+    if (configureScript) baseTabs.push(CONFIGURE_TAB);
+    if (state.includeVpnCompose) baseTabs.push(VPN_TAB);
     return baseTabs;
-  }, [state.includeVpnCompose]);
+  }, [state]);
 
   const currentTab = tabs.find((t) => t.id === activeTab) || tabs[0];
 

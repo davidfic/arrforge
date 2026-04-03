@@ -2,6 +2,7 @@ import type { WizardState, AppConfig, AppDefinition } from '../types';
 import { getAppByIdWithCustom } from '../utils/appLookup';
 import { getConnectionsFrom } from '../data/connections';
 import { getRequiredDirs, getConfigDirs } from './folders';
+import { getAutoConfigConnections } from './configure';
 
 function resolveImage(app: AppDefinition, config?: AppConfig): string {
   if (!config?.imageTag) return app.image;
@@ -39,15 +40,24 @@ export function generateCompose(state: WizardState): string {
 
   // One-shot init service that creates all directories with correct ownership
   // so Docker doesn't create them as root
+  const autoConns = getAutoConfigConnections(state.selectedApps);
   const allDirs = [...getRequiredDirs(state.selectedApps), ...getConfigDirs(state.selectedApps)];
   const mkdirArgs = allDirs.map((d) => `/data/${d}`).join(' ');
+
+  // Seed qBittorrent config to whitelist Docker subnets for auth bypass
+  const needsQbSeed = state.selectedApps.includes('qbittorrent') &&
+    autoConns.some((c) => c.type === 'download-client' && c.to === 'qbittorrent');
+  const qbSeed = needsQbSeed
+    ? ` && if [ ! -f /data/config/qbittorrent/qBittorrent/qBittorrent.conf ]; then mkdir -p /data/config/qbittorrent/qBittorrent && printf '[Preferences]\\nWebUI\\\\AuthSubnetWhitelistEnabled=true\\nWebUI\\\\AuthSubnetWhitelist=172.0.0.0/8,10.0.0.0/8,192.168.0.0/16\\n' > /data/config/qbittorrent/qBittorrent/qBittorrent.conf; fi`
+    : '';
+
   lines.push(`  init-dirs:`);
   lines.push(`    image: busybox`);
   lines.push(`    container_name: init-dirs`);
   lines.push(`    restart: "no"`);
   lines.push(`    volumes:`);
   lines.push(`      - \${BASE_PATH}:/data`);
-  lines.push(`    command: sh -c "mkdir -p ${mkdirArgs} && chown -R \${PUID}:\${PGID} /data"`);
+  lines.push(`    command: sh -c "mkdir -p ${mkdirArgs}${qbSeed} && chown -R \${PUID}:\${PGID} /data"`);
   lines.push('');
 
   for (const appId of state.selectedApps) {
@@ -184,6 +194,40 @@ export function generateCompose(state: WizardState): string {
       lines.push(`      start_period: ${app.healthcheck.startPeriod || '30s'}`);
     }
 
+    lines.push('');
+  }
+
+  // Auto-configure service: wires connections between apps via their APIs
+  if (autoConns.length > 0) {
+    // Collect unique apps involved in auto-configurable connections
+    const autoApps = new Set<string>();
+    for (const conn of autoConns) {
+      autoApps.add(conn.from);
+      autoApps.add(conn.to);
+    }
+
+    lines.push(`  auto-configure:`);
+    lines.push(`    image: curlimages/curl:latest`);
+    lines.push(`    container_name: auto-configure`);
+    lines.push(`    restart: "no"`);
+    lines.push(`    depends_on:`);
+    for (const appId of autoApps) {
+      const app = getAppByIdWithCustom(appId, state.customApps);
+      if (!app) continue;
+      const name = resolveContainerName(app, state.appConfigs[appId]);
+      if (app.healthcheck) {
+        lines.push(`      ${name}:`);
+        lines.push(`        condition: service_healthy`);
+      } else {
+        lines.push(`      ${name}:`);
+        lines.push(`        condition: service_started`);
+      }
+    }
+    lines.push(`    volumes:`);
+    lines.push(`      - \${BASE_PATH}/config:/config:ro`);
+    lines.push(`      - ./configure.sh:/configure.sh:ro`);
+    lines.push(`    entrypoint: ["sh", "/configure.sh"]`);
+    networkApps.push('auto-configure');
     lines.push('');
   }
 

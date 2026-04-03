@@ -3,6 +3,7 @@ import { generateCompose } from './compose';
 import { generateEnv } from './env';
 import { generateReadme } from './readme';
 import { generateVpnCompose } from './vpn';
+import { generateConfigureScript } from './configure';
 
 export interface PerHostOutput {
   hostId: string;
@@ -11,6 +12,7 @@ export interface PerHostOutput {
   compose: string;
   env: string;
   readme: string;
+  configureScript?: string;
   vpn?: string;
 }
 
@@ -38,6 +40,9 @@ export function generatePerHost(state: WizardState): PerHostOutput[] {
       env: generateEnv(hostState),
       readme: generateReadme(hostState),
     };
+
+    const configureScript = generateConfigureScript(hostState);
+    if (configureScript) output.configureScript = configureScript;
 
     if (state.includeVpnCompose) {
       const vpn = generateVpnCompose(hostState);

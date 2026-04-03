@@ -7,6 +7,7 @@ import { generateAdvanced } from './advanced';
 import { generateVpnCompose } from './vpn';
 import { generatePerHost } from './multihost';
 import { getRequiredDirs, getConfigDirs } from './folders';
+import { generateConfigureScript } from './configure';
 
 function addDirsToZip(zip: JSZip, selectedApps: string[]) {
   for (const dir of [...getRequiredDirs(selectedApps), ...getConfigDirs(selectedApps)]) {
@@ -27,6 +28,9 @@ export async function buildZipBlob(state: WizardState): Promise<Blob> {
       hostFolder.file('docker-compose.yml', host.compose);
       hostFolder.file('.env', host.env);
       hostFolder.file('README.md', host.readme);
+      if (host.configureScript) {
+        hostFolder.file('configure.sh', host.configureScript);
+      }
       if (host.vpn) {
         hostFolder.file('docker-compose.vpn.yml', host.vpn);
       }
@@ -38,6 +42,11 @@ export async function buildZipBlob(state: WizardState): Promise<Blob> {
     folder.file('.env', generateEnv(state));
     folder.file('README.md', generateReadme(state));
     folder.file('ADVANCED.md', generateAdvanced(state));
+
+    const configureScript = generateConfigureScript(state);
+    if (configureScript) {
+      folder.file('configure.sh', configureScript);
+    }
 
     if (state.includeVpnCompose) {
       folder.file('docker-compose.vpn.yml', generateVpnCompose(state));
@@ -162,6 +171,9 @@ export async function buildTgzBlob(state: WizardState): Promise<Blob> {
       files.push({ name: hp + 'docker-compose.yml', content: host.compose });
       files.push({ name: hp + '.env', content: host.env });
       files.push({ name: hp + 'README.md', content: host.readme });
+      if (host.configureScript) {
+        files.push({ name: hp + 'configure.sh', content: host.configureScript });
+      }
       if (host.vpn) {
         files.push({ name: hp + 'docker-compose.vpn.yml', content: host.vpn });
       }
@@ -175,6 +187,11 @@ export async function buildTgzBlob(state: WizardState): Promise<Blob> {
     files.push({ name: prefix + '.env', content: generateEnv(state) });
     files.push({ name: prefix + 'README.md', content: generateReadme(state) });
     files.push({ name: prefix + 'ADVANCED.md', content: generateAdvanced(state) });
+
+    const tgzConfigureScript = generateConfigureScript(state);
+    if (tgzConfigureScript) {
+      files.push({ name: prefix + 'configure.sh', content: tgzConfigureScript });
+    }
 
     if (state.includeVpnCompose) {
       files.push({ name: prefix + 'docker-compose.vpn.yml', content: generateVpnCompose(state) });
