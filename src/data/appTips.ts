@@ -45,9 +45,6 @@ export const appTips: Record<string, AppTip> = {
   lidarr: {
     firstRunTip: 'Go to Settings > Media Management and set your root folder to /data/media/music.',
   },
-  readarr: {
-    firstRunTip: 'Go to Settings > Media Management and set your root folder to /data/media/books.',
-  },
   bazarr: {
     firstRunTip: 'Configure your subtitle providers in Settings > Providers before connecting to Sonarr/Radarr.',
   },

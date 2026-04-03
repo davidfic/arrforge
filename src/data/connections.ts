@@ -53,14 +53,6 @@ export const connections: AppConnection[] = [
   { from: 'lidarr', to: 'nzbget', type: 'download-client', label: 'Download Client (Usenet)',
     setupInstructions: 'In Lidarr, go to Settings → Download Clients → + → NZBGet. Host: `nzbget`, Port: `6789`.' },
 
-  { from: 'readarr', to: 'qbittorrent', type: 'download-client', label: 'Download Client',
-    setupInstructions: 'In Readarr, go to Settings → Download Clients → + → qBittorrent. Host: `qbittorrent`, Port: `8080`.' },
-  { from: 'readarr', to: 'transmission', type: 'download-client', label: 'Download Client',
-    setupInstructions: 'In Readarr, go to Settings → Download Clients → + → Transmission. Host: `transmission`, Port: `9091`.' },
-  { from: 'readarr', to: 'sabnzbd', type: 'download-client', label: 'Download Client (Usenet)',
-    setupInstructions: 'In Readarr, go to Settings → Download Clients → + → SABnzbd. Host: `sabnzbd`, Port: `8080`. Add your API key.' },
-  { from: 'readarr', to: 'nzbget', type: 'download-client', label: 'Download Client (Usenet)',
-    setupInstructions: 'In Readarr, go to Settings → Download Clients → + → NZBGet. Host: `nzbget`, Port: `6789`.' },
 
   // ── Prowlarr → *arr apps ──
   { from: 'prowlarr', to: 'sonarr', type: 'indexer', label: 'App Sync',
@@ -71,8 +63,6 @@ export const connections: AppConnection[] = [
     setupInstructions: 'In Prowlarr, go to Settings → Apps → + → Radarr. Prowlarr Server: `http://prowlarr:9696`, Radarr Server: `http://luminarr:8282`. Add the Luminarr API key. Luminarr is Radarr API-compatible.' },
   { from: 'prowlarr', to: 'lidarr', type: 'indexer', label: 'App Sync',
     setupInstructions: 'In Prowlarr, go to Settings → Apps → + → Lidarr. Prowlarr Server: `http://prowlarr:9696`, Lidarr Server: `http://lidarr:8686`. Add the Lidarr API key.' },
-  { from: 'prowlarr', to: 'readarr', type: 'indexer', label: 'App Sync',
-    setupInstructions: 'In Prowlarr, go to Settings → Apps → + → Readarr. Prowlarr Server: `http://prowlarr:9696`, Readarr Server: `http://readarr:8787`. Add the Readarr API key.' },
 
   // ── Prowlarr → FlareSolverr ──
   { from: 'prowlarr', to: 'flaresolverr', type: 'indexer', label: 'Indexer Proxy',

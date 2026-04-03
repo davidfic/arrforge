@@ -18,7 +18,7 @@ export const presets: PresetStack[] = [
     id: 'power-user',
     name: 'Power User',
     description: 'All media types with quality automation and subtitles',
-    appIds: ['sonarr', 'radarr', 'lidarr', 'readarr', 'bazarr', 'prowlarr', 'flaresolverr', 'qbittorrent', 'recyclarr'],
+    appIds: ['sonarr', 'radarr', 'lidarr', 'bazarr', 'prowlarr', 'flaresolverr', 'qbittorrent', 'recyclarr'],
   },
   {
     id: 'usenet-only',

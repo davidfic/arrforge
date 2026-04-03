@@ -14,7 +14,6 @@ const MEDIA_DIRS: MediaDir[] = [
   { name: 'movies', label: 'Movie library', apps: ['radarr', 'luminarr'] },
   { name: 'tv', label: 'TV show library', apps: ['sonarr'] },
   { name: 'music', label: 'Music library', apps: ['lidarr'] },
-  { name: 'books', label: 'Book library', apps: ['readarr'] },
 ];
 
 /** Returns the list of directories that should be created based on selected apps. */

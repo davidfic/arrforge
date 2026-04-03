@@ -51,21 +51,6 @@ export const apps: AppDefinition[] = [
     starter: false,
   },
   {
-    id: 'readarr',
-    name: 'Readarr',
-    description: 'Book and audiobook collection manager',
-    category: 'media-management',
-    image: 'lscr.io/linuxserver/readarr:develop',
-    ports: [{ host: 8787, container: 8787, description: 'Web UI' }],
-    volumes: [
-      { host: '${BASE_PATH}/media', container: '/data', description: 'Media root' },
-      { host: '${BASE_PATH}/config/readarr', container: '/config', description: 'Config' },
-    ],
-    healthcheck: { test: 'curl -f http://localhost:8787/ping || exit 1' },
-    docUrl: 'https://wiki.servarr.com/readarr',
-    starter: false,
-  },
-  {
     id: 'luminarr',
     name: 'Luminarr',
     description: 'Modern movie collection manager — lightweight Radarr alternative written in Go',

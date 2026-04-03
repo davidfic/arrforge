@@ -54,14 +54,6 @@ export const galleryStacks: GalleryStack[] = [
     difficulty: 'intermediate',
   },
   {
-    id: 'book-worm',
-    name: 'Book Worm',
-    description: 'Focused on books and audiobooks. Readarr handles the library.',
-    tags: ['books', 'minimal'],
-    appIds: ['readarr', 'prowlarr', 'flaresolverr', 'qbittorrent'],
-    difficulty: 'beginner',
-  },
-  {
     id: 'music-collector',
     name: 'Music Collector',
     description: 'Automated music library management with Lidarr.',
@@ -90,7 +82,7 @@ export const galleryStacks: GalleryStack[] = [
     name: 'The Kitchen Sink',
     description: 'Every app category covered. For the person who wants it all.',
     tags: ['complete', 'advanced'],
-    appIds: ['sonarr', 'radarr', 'lidarr', 'readarr', 'bazarr', 'prowlarr', 'flaresolverr', 'qbittorrent', 'sabnzbd', 'plex', 'overseerr', 'tautulli', 'recyclarr', 'nginx-proxy-manager'],
+    appIds: ['sonarr', 'radarr', 'lidarr', 'bazarr', 'prowlarr', 'flaresolverr', 'qbittorrent', 'sabnzbd', 'plex', 'overseerr', 'tautulli', 'recyclarr', 'nginx-proxy-manager'],
     difficulty: 'advanced',
   },
 ];
