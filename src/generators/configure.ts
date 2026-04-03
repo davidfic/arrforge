@@ -44,10 +44,8 @@ const DL_CATEGORY: Record<string, string> = {
 export function getAutoConfigConnections(selectedApps: string[]): AppConnection[] {
   return getActiveConnections(selectedApps).filter((c) => {
     if (!AUTO_TYPES.has(c.type)) return false;
-    // Only auto-configure download clients we have mappings for
-    if (c.type === 'download-client') {
-      return c.from in DOWNLOAD_CLIENT_API && c.to in DL_CLIENT_MAP;
-    }
+    // Download clients require auth credentials we can't reliably obtain
+    if (c.type === 'download-client') return false;
     // Indexer connections: Prowlarr → *arr apps or Prowlarr → FlareSolverr
     if (c.type === 'indexer') {
       if (c.from !== 'prowlarr') return false;
@@ -98,7 +96,7 @@ export function generateConfigureScript(state: WizardState): string {
   lines.push('exists_by_name() {');
   lines.push('  url="$1"; api_key="$2"; name="$3"');
   lines.push('  response=$(curl -sf -H "X-Api-Key: ${api_key}" "$url" 2>/dev/null || echo "[]")');
-  lines.push('  echo "$response" | grep -q "\\"name\\":\\"${name}\\""');
+  lines.push('  echo "$response" | grep -q "\\"name\\".*\\"${name}\\""');
   lines.push('}');
   lines.push('');
 

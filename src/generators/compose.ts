@@ -44,20 +44,13 @@ export function generateCompose(state: WizardState): string {
   const allDirs = [...getRequiredDirs(state.selectedApps), ...getConfigDirs(state.selectedApps)];
   const mkdirArgs = allDirs.map((d) => `/data/${d}`).join(' ');
 
-  // Seed qBittorrent config to whitelist Docker subnets for auth bypass
-  const needsQbSeed = state.selectedApps.includes('qbittorrent') &&
-    autoConns.some((c) => c.type === 'download-client' && c.to === 'qbittorrent');
-  const qbSeed = needsQbSeed
-    ? ` && if [ ! -f /data/config/qbittorrent/qBittorrent/qBittorrent.conf ]; then mkdir -p /data/config/qbittorrent/qBittorrent && printf '[Preferences]\\nWebUI\\\\AuthSubnetWhitelistEnabled=true\\nWebUI\\\\AuthSubnetWhitelist=172.0.0.0/8,10.0.0.0/8,192.168.0.0/16\\n' > /data/config/qbittorrent/qBittorrent/qBittorrent.conf; fi`
-    : '';
-
   lines.push(`  init-dirs:`);
   lines.push(`    image: busybox`);
   lines.push(`    container_name: init-dirs`);
   lines.push(`    restart: "no"`);
   lines.push(`    volumes:`);
   lines.push(`      - \${BASE_PATH}:/data`);
-  lines.push(`    command: sh -c "mkdir -p ${mkdirArgs}${qbSeed} && chown -R \${PUID}:\${PGID} /data"`);
+  lines.push(`    command: sh -c "mkdir -p ${mkdirArgs} && chown -R \${PUID}:\${PGID} /data"`);
   lines.push('');
 
   for (const appId of state.selectedApps) {
