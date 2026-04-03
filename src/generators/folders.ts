@@ -78,17 +78,10 @@ export function generateFolderGuide(state: WizardState): string {
   lines.push('```');
   lines.push('');
 
-  lines.push('## Create directories');
+  lines.push('## Directories');
   lines.push('');
-  lines.push('Run the included setup script to create all directories with correct ownership:');
-  lines.push('');
-  lines.push('```bash');
-  lines.push(`./setup.sh`);
-  lines.push('```');
-  lines.push('');
-  lines.push('> **Important:** Run this before `docker compose up`. If Docker creates these');
-  lines.push('> directories first, they will be owned by root, which prevents some containers');
-  lines.push('> from writing to their config volumes.');
+  lines.push('All directories are created automatically by the `init-dirs` service');
+  lines.push('when you run `docker compose up`. No manual setup needed.');
   lines.push('');
 
   // Hardlinks explanation

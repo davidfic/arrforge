@@ -1,6 +1,7 @@
 import type { WizardState, AppConfig, AppDefinition } from '../types';
 import { getAppByIdWithCustom } from '../utils/appLookup';
 import { getConnectionsFrom } from '../data/connections';
+import { getRequiredDirs, getConfigDirs } from './folders';
 
 function resolveImage(app: AppDefinition, config?: AppConfig): string {
   if (!config?.imageTag) return app.image;
@@ -36,6 +37,19 @@ export function generateCompose(state: WizardState): string {
 
   lines.push('services:');
 
+  // One-shot init service that creates all directories with correct ownership
+  // so Docker doesn't create them as root
+  const allDirs = [...getRequiredDirs(state.selectedApps), ...getConfigDirs(state.selectedApps)];
+  const mkdirArgs = allDirs.map((d) => `/data/${d}`).join(' ');
+  lines.push(`  init-dirs:`);
+  lines.push(`    image: busybox`);
+  lines.push(`    container_name: init-dirs`);
+  lines.push(`    restart: "no"`);
+  lines.push(`    volumes:`);
+  lines.push(`      - \${BASE_PATH}:/data`);
+  lines.push(`    command: sh -c "mkdir -p ${mkdirArgs} && chown -R \${PUID}:\${PGID} /data"`);
+  lines.push('');
+
   for (const appId of state.selectedApps) {
     const app = getAppByIdWithCustom(appId, state.customApps);
     if (!app) continue;
@@ -56,26 +70,22 @@ export function generateCompose(state: WizardState): string {
 
     lines.push(`    restart: unless-stopped`);
 
-    // Depends on (only connections explicitly marked as startup dependencies)
+    // Depends on: always wait for init-dirs, plus any connections marked as startup dependencies
     const deps = getConnectionsFrom(appId, state.selectedApps).filter((c) => c.dependsOn);
-    const depNames = [...new Set(deps.map((d) => {
-      const depConfig = state.appConfigs[d.to];
-      const depApp = getAppByIdWithCustom(d.to, state.customApps);
-      return depApp ? resolveContainerName(depApp, depConfig) : d.to;
-    }))];
 
-    if (depNames.length > 0) {
-      lines.push(`    depends_on:`);
-      for (const dep of deps) {
-        const depApp = getAppByIdWithCustom(dep.to, state.customApps);
-        const depConfig = state.appConfigs[dep.to];
-        const depName = depApp ? resolveContainerName(depApp, depConfig) : dep.to;
-        if (depApp?.healthcheck) {
-          lines.push(`      ${depName}:`);
-          lines.push(`        condition: service_healthy`);
-        } else {
-          lines.push(`      - ${depName}`);
-        }
+    lines.push(`    depends_on:`);
+    lines.push(`      init-dirs:`);
+    lines.push(`        condition: service_completed_successfully`);
+    for (const dep of deps) {
+      const depApp = getAppByIdWithCustom(dep.to, state.customApps);
+      const depConfig = state.appConfigs[dep.to];
+      const depName = depApp ? resolveContainerName(depApp, depConfig) : dep.to;
+      if (depApp?.healthcheck) {
+        lines.push(`      ${depName}:`);
+        lines.push(`        condition: service_healthy`);
+      } else {
+        lines.push(`      ${depName}:`);
+        lines.push(`        condition: service_started`);
       }
     }
 

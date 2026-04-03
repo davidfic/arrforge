@@ -7,7 +7,6 @@ import { generateAdvanced } from './advanced';
 import { generateVpnCompose } from './vpn';
 import { generatePerHost } from './multihost';
 import { getRequiredDirs, getConfigDirs } from './folders';
-import { generateSetupScript } from './setup';
 
 function addDirsToZip(zip: JSZip, selectedApps: string[]) {
   for (const dir of [...getRequiredDirs(selectedApps), ...getConfigDirs(selectedApps)]) {
@@ -28,7 +27,6 @@ export async function buildZipBlob(state: WizardState): Promise<Blob> {
       hostFolder.file('docker-compose.yml', host.compose);
       hostFolder.file('.env', host.env);
       hostFolder.file('README.md', host.readme);
-      hostFolder.file('setup.sh', generateSetupScript({ ...state, selectedApps: host.apps }));
       if (host.vpn) {
         hostFolder.file('docker-compose.vpn.yml', host.vpn);
       }
@@ -40,7 +38,6 @@ export async function buildZipBlob(state: WizardState): Promise<Blob> {
     folder.file('.env', generateEnv(state));
     folder.file('README.md', generateReadme(state));
     folder.file('ADVANCED.md', generateAdvanced(state));
-    folder.file('setup.sh', generateSetupScript(state));
 
     if (state.includeVpnCompose) {
       folder.file('docker-compose.vpn.yml', generateVpnCompose(state));
@@ -63,7 +60,7 @@ function encodeUTF8(str: string): Uint8Array {
   return new TextEncoder().encode(str);
 }
 
-function tarHeader(name: string, size: number, opts: { isDir?: boolean; executable?: boolean } = {}): Uint8Array {
+function tarHeader(name: string, size: number, opts: { isDir?: boolean } = {}): Uint8Array {
   const header = new Uint8Array(512);
 
   // name (0-99)
@@ -71,8 +68,7 @@ function tarHeader(name: string, size: number, opts: { isDir?: boolean; executab
   header.set(nameBytes.subarray(0, 100), 0);
 
   // mode (100-107)
-  const fileMode = opts.isDir ? '0000755\0' : opts.executable ? '0000755\0' : '0000644\0';
-  const mode = encodeUTF8(fileMode);
+  const mode = encodeUTF8(opts.isDir ? '0000755\0' : '0000644\0');
   header.set(mode, 100);
 
   // uid (108-115), gid (116-123)
@@ -106,7 +102,7 @@ function tarHeader(name: string, size: number, opts: { isDir?: boolean; executab
   return header;
 }
 
-function buildTarball(files: { name: string; content: string; executable?: boolean }[], dirs: string[]): Uint8Array {
+function buildTarball(files: { name: string; content: string }[], dirs: string[]): Uint8Array {
   const parts: Uint8Array[] = [];
 
   // Add directories first
@@ -118,7 +114,7 @@ function buildTarball(files: { name: string; content: string; executable?: boole
   // Add files
   for (const file of files) {
     const data = encodeUTF8(file.content);
-    parts.push(tarHeader(file.name, data.length, { executable: file.executable }));
+    parts.push(tarHeader(file.name, data.length));
     parts.push(data);
     // Pad to 512-byte boundary
     const remainder = data.length % 512;
@@ -142,7 +138,7 @@ function buildTarball(files: { name: string; content: string; executable?: boole
 
 export async function buildTgzBlob(state: WizardState): Promise<Blob> {
   const prefix = 'media-stack/';
-  const files: { name: string; content: string; executable?: boolean }[] = [];
+  const files: { name: string; content: string }[] = [];
   const dirs: string[] = [];
   const isMultiHost = state.multiHost && state.hosts.length > 1;
 
@@ -166,7 +162,6 @@ export async function buildTgzBlob(state: WizardState): Promise<Blob> {
       files.push({ name: hp + 'docker-compose.yml', content: host.compose });
       files.push({ name: hp + '.env', content: host.env });
       files.push({ name: hp + 'README.md', content: host.readme });
-      files.push({ name: hp + 'setup.sh', executable: true, content: generateSetupScript({ ...state, selectedApps: host.apps }) });
       if (host.vpn) {
         files.push({ name: hp + 'docker-compose.vpn.yml', content: host.vpn });
       }
@@ -180,7 +175,6 @@ export async function buildTgzBlob(state: WizardState): Promise<Blob> {
     files.push({ name: prefix + '.env', content: generateEnv(state) });
     files.push({ name: prefix + 'README.md', content: generateReadme(state) });
     files.push({ name: prefix + 'ADVANCED.md', content: generateAdvanced(state) });
-    files.push({ name: prefix + 'setup.sh', executable: true, content: generateSetupScript(state) });
 
     if (state.includeVpnCompose) {
       files.push({ name: prefix + 'docker-compose.vpn.yml', content: generateVpnCompose(state) });
