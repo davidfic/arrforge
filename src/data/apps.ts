@@ -185,7 +185,7 @@ export const apps: AppDefinition[] = [
     volumes: [
       { host: '${BASE_PATH}/config/prowlarr', container: '/config', description: 'Config' },
     ],
-    healthcheck: { test: 'curl -f http://localhost:9696/ping || exit 1' },
+    healthcheck: { test: 'curl -f http://localhost:9696/ || exit 1' },
     docUrl: 'https://wiki.servarr.com/prowlarr',
     starter: true,
   },
