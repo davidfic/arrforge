@@ -223,11 +223,12 @@ export function generateCompose(state: WizardState): string {
         lines.push(`        condition: service_started`);
       }
     }
+    lines.push(`    networks:`);
+    lines.push(`      - ${state.networkName}`);
     lines.push(`    volumes:`);
     lines.push(`      - \${BASE_PATH}/config:/config:ro`);
     lines.push(`      - ./configure.sh:/configure.sh:ro`);
     lines.push(`    entrypoint: ["sh", "/configure.sh"]`);
-    networkApps.push('auto-configure');
     lines.push('');
   }
 
