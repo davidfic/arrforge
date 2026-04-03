@@ -42,9 +42,9 @@ export default function App() {
       case 2:
         return <ConfigureStep state={state} dispatch={dispatch} />;
       case 3:
-        return <ReviewStep state={state} dispatch={dispatch} onReset={reset} />;
+        return <ReviewStep state={state} dispatch={dispatch} />;
       case 4:
-        return <SetupGuideStep state={state} dispatch={dispatch} onReset={reset} />;
+        return <SetupGuideStep state={state} dispatch={dispatch} />;
       default:
         return <WelcomeStep dispatch={dispatch} onOpenGallery={() => setGalleryOpen(true)} />;
     }
@@ -57,6 +57,7 @@ export default function App() {
       advancedMode={state.advancedMode}
       onStepClick={handleStepClick}
       onToggleAdvanced={() => dispatch({ type: 'TOGGLE_ADVANCED' })}
+      onReset={reset}
       theme={theme}
     >
       {sharedConfig && (

@@ -17,6 +17,27 @@ const MEDIA_DIRS: MediaDir[] = [
   { name: 'books', label: 'Book library', apps: ['readarr'] },
 ];
 
+/** Returns the list of directories that should be created based on selected apps. */
+export function getRequiredDirs(selectedApps: string[]): string[] {
+  const dirs: string[] = [];
+  const hasTorrents = selectedApps.some((id) => TORRENT_CLIENTS.includes(id));
+  const hasUsenet = selectedApps.some((id) => USENET_CLIENTS.includes(id));
+  const activeMedia = MEDIA_DIRS.filter((d) => d.apps.some((a) => selectedApps.includes(a)));
+
+  if (hasTorrents) dirs.push('torrents');
+  if (hasUsenet) dirs.push('usenet');
+  for (const dir of activeMedia) {
+    dirs.push(`media/${dir.name}`);
+  }
+
+  const configApps = selectedApps.map((id) => getAppById(id)).filter(Boolean);
+  for (const app of configApps) {
+    dirs.push(`config/${app!.id}`);
+  }
+
+  return dirs;
+}
+
 export function generateFolderGuide(state: WizardState): string {
   const lines: string[] = [];
   const selected = state.selectedApps;

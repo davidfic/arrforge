@@ -6,10 +6,9 @@ import { CopyCommand } from '../components/CopyCommand';
 interface SetupGuideStepProps {
   state: WizardState;
   dispatch: React.Dispatch<WizardAction>;
-  onReset: () => void;
 }
 
-export function SetupGuideStep({ state, dispatch, onReset }: SetupGuideStepProps) {
+export function SetupGuideStep({ state, dispatch }: SetupGuideStepProps) {
   const tasks = generateSetupTasks(state);
   const phaseMap = getTasksByPhase(tasks);
   const completed = state.completedSetupTasks;
@@ -140,12 +139,6 @@ export function SetupGuideStep({ state, dispatch, onReset }: SetupGuideStepProps
           className="px-4 py-2 text-sm text-theme-text-muted hover:text-theme-text-primary transition-colors"
         >
           Back to Review
-        </button>
-        <button
-          onClick={onReset}
-          className="px-4 py-2 text-sm text-red-500 hover:text-red-400 transition-colors"
-        >
-          Start Over
         </button>
       </div>
     </div>

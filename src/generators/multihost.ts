@@ -7,6 +7,7 @@ import { generateVpnCompose } from './vpn';
 export interface PerHostOutput {
   hostId: string;
   hostName: string;
+  apps: string[];
   compose: string;
   env: string;
   readme: string;
@@ -32,6 +33,7 @@ export function generatePerHost(state: WizardState): PerHostOutput[] {
     const output: PerHostOutput = {
       hostId: host.id,
       hostName: host.name,
+      apps: hostApps,
       compose: generateCompose(hostState),
       env: generateEnv(hostState),
       readme: generateReadme(hostState),

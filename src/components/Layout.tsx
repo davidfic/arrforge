@@ -10,10 +10,11 @@ interface LayoutProps {
   advancedMode: boolean;
   onStepClick: (step: number) => void;
   onToggleAdvanced: () => void;
+  onReset: () => void;
   theme: { theme: Theme; setTheme: (t: Theme) => void };
 }
 
-export function Layout({ children, currentStep, maxStep, advancedMode, onStepClick, onToggleAdvanced, theme }: LayoutProps) {
+export function Layout({ children, currentStep, maxStep, advancedMode, onStepClick, onToggleAdvanced, onReset, theme }: LayoutProps) {
   return (
     <div className="min-h-screen flex flex-col">
       <header className="border-b border-theme-border bg-theme-bg-elevated backdrop-blur-sm sticky top-0 z-40">
@@ -26,6 +27,14 @@ export function Layout({ children, currentStep, maxStep, advancedMode, onStepCli
             ArrForge
           </button>
           <div className="flex items-center gap-2">
+            {currentStep > 0 && (
+              <button
+                onClick={onReset}
+                className="px-3 py-1.5 rounded-lg text-xs font-medium border border-red-500/40 text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors"
+              >
+                Start Over
+              </button>
+            )}
             <ThemeToggle theme={theme.theme} onSelect={theme.setTheme} />
             <AdvancedToggle enabled={advancedMode} onToggle={onToggleAdvanced} />
           </div>
