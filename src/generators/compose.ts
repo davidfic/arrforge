@@ -70,12 +70,20 @@ export function generateCompose(state: WizardState): string {
 
   initCmds.push('chown -R ${PUID}:${PGID} /data');
 
+  // If qBittorrent needs auth bypass, also mount the project dir so we can chmod the init script
+  if (needsQbAuthBypass) {
+    initCmds.push('chmod +x /project/qbt-auth-bypass.sh');
+  }
+
   lines.push(`  init-dirs:`);
   lines.push(`    image: busybox`);
   lines.push(`    container_name: init-dirs`);
   lines.push(`    restart: "no"`);
   lines.push(`    volumes:`);
   lines.push(`      - \${BASE_PATH}:/data`);
+  if (needsQbAuthBypass) {
+    lines.push(`      - .:/project`);
+  }
   lines.push(`    command: sh -c "${initCmds.join(' && ')}"`);
   lines.push('');
 
