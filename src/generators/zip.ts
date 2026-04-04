@@ -7,7 +7,18 @@ import { generateAdvanced } from './advanced';
 import { generateVpnCompose } from './vpn';
 import { generatePerHost } from './multihost';
 import { getRequiredDirs, getConfigDirs } from './folders';
-import { generateConfigureScript } from './configure';
+import { generateConfigureScript, getAutoConfigConnections } from './configure';
+
+const QBT_AUTH_BYPASS_SCRIPT = `#!/bin/bash
+# Enables auth bypass for Docker subnets so *arr apps can connect without credentials.
+# Mounted into /custom-cont-init.d/ — runs after linuxserver init creates the default
+# config but before qBittorrent starts.
+CONF="/config/qBittorrent/qBittorrent.conf"
+if [ -f "$CONF" ] && ! grep -q "AuthSubnetWhitelistEnabled" "$CONF"; then
+  printf '\\n[Preferences]\\nWebUI\\\\AuthSubnetWhitelistEnabled=true\\nWebUI\\\\AuthSubnetWhitelist=172.0.0.0/8, 10.0.0.0/8, 192.168.0.0/16\\nWebUI\\\\LocalHostAuth=false\\n' >> "$CONF"
+  echo "[custom-init] Added auth bypass for Docker subnets"
+fi
+`;
 
 function addDirsToZip(zip: JSZip, selectedApps: string[]) {
   for (const dir of [...getRequiredDirs(selectedApps), ...getConfigDirs(selectedApps)]) {
@@ -46,6 +57,13 @@ export async function buildZipBlob(state: WizardState): Promise<Blob> {
     const configureScript = generateConfigureScript(state);
     if (configureScript) {
       folder.file('configure.sh', configureScript);
+    }
+
+    // qBittorrent auth bypass init script
+    const needsQbBypass = state.selectedApps.includes('qbittorrent') &&
+      getAutoConfigConnections(state.selectedApps).some((c) => c.type === 'download-client' && c.to === 'qbittorrent');
+    if (needsQbBypass) {
+      folder.file('qbt-auth-bypass.sh', QBT_AUTH_BYPASS_SCRIPT);
     }
 
     if (state.includeVpnCompose) {
@@ -191,6 +209,12 @@ export async function buildTgzBlob(state: WizardState): Promise<Blob> {
     const tgzConfigureScript = generateConfigureScript(state);
     if (tgzConfigureScript) {
       files.push({ name: prefix + 'configure.sh', content: tgzConfigureScript });
+    }
+
+    const tgzNeedsQbBypass = state.selectedApps.includes('qbittorrent') &&
+      getAutoConfigConnections(state.selectedApps).some((c) => c.type === 'download-client' && c.to === 'qbittorrent');
+    if (tgzNeedsQbBypass) {
+      files.push({ name: prefix + 'qbt-auth-bypass.sh', content: QBT_AUTH_BYPASS_SCRIPT });
     }
 
     if (state.includeVpnCompose) {

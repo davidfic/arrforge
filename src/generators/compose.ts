@@ -58,21 +58,15 @@ export function generateCompose(state: WizardState): string {
     const cfg = ARR_APPS_CONFIG[appId];
     if (!cfg) continue;
     const confPath = `/data/config/${appId}/config.xml`;
+    const nl = '\\\\n'; // produces \\n in compose YAML, which sh+printf interprets as newline
     initCmds.push(
-      `if [ ! -f ${confPath} ]; then printf '<Config>\\n  <BindAddress>*</BindAddress>\\n  <Port>${cfg.port}</Port>\\n  <SslPort>${cfg.sslPort}</SslPort>\\n  <EnableSsl>False</EnableSsl>\\n  <LaunchBrowser>True</LaunchBrowser>\\n  <AuthenticationMethod>None</AuthenticationMethod>\\n  <Branch>${cfg.branch}</Branch>\\n  <LogLevel>info</LogLevel>\\n  <UrlBase></UrlBase>\\n  <InstanceName>${cfg.name}</InstanceName>\\n</Config>\\n' > ${confPath}; fi`
+      `if [ ! -f ${confPath} ]; then printf '<Config>${nl}  <BindAddress>*</BindAddress>${nl}  <Port>${cfg.port}</Port>${nl}  <SslPort>${cfg.sslPort}</SslPort>${nl}  <EnableSsl>False</EnableSsl>${nl}  <LaunchBrowser>True</LaunchBrowser>${nl}  <AuthenticationMethod>None</AuthenticationMethod>${nl}  <Branch>${cfg.branch}</Branch>${nl}  <LogLevel>info</LogLevel>${nl}  <UrlBase></UrlBase>${nl}  <InstanceName>${cfg.name}</InstanceName>${nl}</Config>${nl}' > ${confPath}; fi`
     );
   }
 
-  // Seed qBittorrent config with auth bypass for Docker subnets
-  const needsQbSeed = state.selectedApps.includes('qbittorrent') &&
+  // Track whether qBittorrent needs auth bypass for auto-configure
+  const needsQbAuthBypass = state.selectedApps.includes('qbittorrent') &&
     autoConns.some((c) => c.type === 'download-client' && c.to === 'qbittorrent');
-  if (needsQbSeed) {
-    const qbDir = '/data/config/qbittorrent/qBittorrent';
-    const qbPath = `${qbDir}/qBittorrent.conf`;
-    initCmds.push(
-      `if [ ! -f ${qbPath} ]; then mkdir -p ${qbDir} && printf '[AutoRun]\\nenabled=false\\nprogram=\\n\\n[LegalNotice]\\nAccepted=true\\n\\n[Preferences]\\nConnection\\\\UPnP=false\\nConnection\\\\PortRangeMin=6881\\nDownloads\\\\SavePath=/downloads/\\nWebUI\\\\Address=*\\nWebUI\\\\ServerDomains=*\\nWebUI\\\\AuthSubnetWhitelistEnabled=true\\nWebUI\\\\AuthSubnetWhitelist=172.0.0.0/8, 10.0.0.0/8, 192.168.0.0/16\\nWebUI\\\\LocalHostAuth=false\\n' > ${qbPath}; fi`
-    );
-  }
 
   initCmds.push('chown -R ${PUID}:${PGID} /data');
 
@@ -171,10 +165,14 @@ export function generateCompose(state: WizardState): string {
     }
 
     // Volumes
-    if (app.volumes.length > 0) {
+    if (app.volumes.length > 0 || (app.id === 'qbittorrent' && needsQbAuthBypass)) {
       lines.push(`    volumes:`);
       for (const vol of app.volumes) {
         lines.push(`      - ${vol.host}:${vol.container}`);
+      }
+      // Mount auth bypass init script into qBittorrent's custom init directory
+      if (app.id === 'qbittorrent' && needsQbAuthBypass) {
+        lines.push(`      - ./qbt-auth-bypass.sh:/custom-cont-init.d/99-auth-bypass.sh:ro`);
       }
     }
 
