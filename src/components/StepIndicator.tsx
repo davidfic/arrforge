@@ -12,7 +12,8 @@ export function StepIndicator({ currentStep, maxStep, onStepClick }: StepIndicat
       {STEPS.map((label, i) => {
         const isComplete = i < currentStep;
         const isCurrent = i === currentStep;
-        const isClickable = i !== currentStep && i <= maxStep;
+        const isSetupGuide = i === STEPS.length - 1;
+        const isClickable = i !== currentStep && (i <= maxStep || isSetupGuide);
 
         return (
           <div key={label} className="flex items-center">
