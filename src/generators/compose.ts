@@ -44,14 +44,37 @@ export function generateCompose(state: WizardState): string {
   const allDirs = [...getRequiredDirs(state.selectedApps), ...getConfigDirs(state.selectedApps)];
   const mkdirArgs = allDirs.map((d) => `/data/${d}`).join(' ');
 
-  // Seed qBittorrent config with auth bypass for Docker subnets so *arr apps can connect without credentials
+  // Build the init-dirs command: create dirs, seed configs, fix ownership
+  const initCmds: string[] = [];
+  initCmds.push(`mkdir -p ${mkdirArgs}`);
+
+  // Seed *arr app configs with auth disabled so there's no setup popup
+  const ARR_APPS_CONFIG: Record<string, { port: number; sslPort: number; branch: string; name: string }> = {
+    sonarr: { port: 8989, sslPort: 9898, branch: 'main', name: 'Sonarr' },
+    radarr: { port: 7878, sslPort: 9898, branch: 'master', name: 'Radarr' },
+    lidarr: { port: 8686, sslPort: 6868, branch: 'master', name: 'Lidarr' },
+  };
+  for (const appId of state.selectedApps) {
+    const cfg = ARR_APPS_CONFIG[appId];
+    if (!cfg) continue;
+    const confPath = `/data/config/${appId}/config.xml`;
+    initCmds.push(
+      `if [ ! -f ${confPath} ]; then printf '<Config>\\n  <BindAddress>*</BindAddress>\\n  <Port>${cfg.port}</Port>\\n  <SslPort>${cfg.sslPort}</SslPort>\\n  <EnableSsl>False</EnableSsl>\\n  <LaunchBrowser>True</LaunchBrowser>\\n  <AuthenticationMethod>None</AuthenticationMethod>\\n  <Branch>${cfg.branch}</Branch>\\n  <LogLevel>info</LogLevel>\\n  <UrlBase></UrlBase>\\n  <InstanceName>${cfg.name}</InstanceName>\\n</Config>\\n' > ${confPath}; fi`
+    );
+  }
+
+  // Seed qBittorrent config with auth bypass for Docker subnets
   const needsQbSeed = state.selectedApps.includes('qbittorrent') &&
     autoConns.some((c) => c.type === 'download-client' && c.to === 'qbittorrent');
-  const qbConfDir = '/data/config/qbittorrent/qBittorrent';
-  const qbConfPath = `${qbConfDir}/qBittorrent.conf`;
-  const qbSeed = needsQbSeed
-    ? ` && if [ ! -f ${qbConfPath} ]; then mkdir -p ${qbConfDir} && printf '[AutoRun]\\nenabled=false\\nprogram=\\n\\n[LegalNotice]\\nAccepted=true\\n\\n[Preferences]\\nConnection\\\\UPnP=false\\nConnection\\\\PortRangeMin=6881\\nDownloads\\\\SavePath=/downloads/\\nWebUI\\\\Address=*\\nWebUI\\\\ServerDomains=*\\nWebUI\\\\AuthSubnetWhitelistEnabled=true\\nWebUI\\\\AuthSubnetWhitelist=172.0.0.0/8, 10.0.0.0/8, 192.168.0.0/16\\nWebUI\\\\LocalHostAuth=false\\n' > ${qbConfPath}; fi`
-    : '';
+  if (needsQbSeed) {
+    const qbDir = '/data/config/qbittorrent/qBittorrent';
+    const qbPath = `${qbDir}/qBittorrent.conf`;
+    initCmds.push(
+      `if [ ! -f ${qbPath} ]; then mkdir -p ${qbDir} && printf '[AutoRun]\\nenabled=false\\nprogram=\\n\\n[LegalNotice]\\nAccepted=true\\n\\n[Preferences]\\nConnection\\\\UPnP=false\\nConnection\\\\PortRangeMin=6881\\nDownloads\\\\SavePath=/downloads/\\nWebUI\\\\Address=*\\nWebUI\\\\ServerDomains=*\\nWebUI\\\\AuthSubnetWhitelistEnabled=true\\nWebUI\\\\AuthSubnetWhitelist=172.0.0.0/8, 10.0.0.0/8, 192.168.0.0/16\\nWebUI\\\\LocalHostAuth=false\\n' > ${qbPath}; fi`
+    );
+  }
+
+  initCmds.push('chown -R ${PUID}:${PGID} /data');
 
   lines.push(`  init-dirs:`);
   lines.push(`    image: busybox`);
@@ -59,7 +82,7 @@ export function generateCompose(state: WizardState): string {
   lines.push(`    restart: "no"`);
   lines.push(`    volumes:`);
   lines.push(`      - \${BASE_PATH}:/data`);
-  lines.push(`    command: sh -c "mkdir -p ${mkdirArgs}${qbSeed} && chown -R \${PUID}:\${PGID} /data"`);
+  lines.push(`    command: sh -c "${initCmds.join(' && ')}"`);
   lines.push('');
 
   for (const appId of state.selectedApps) {
