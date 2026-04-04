@@ -1,6 +1,7 @@
 import type { WizardState } from '../types';
 import { getAppByIdWithCustom } from '../utils/appLookup';
 import { getActiveConnections } from './connections';
+import { getAutoConfigConnections } from '../generators/configure';
 import { appTips } from './appTips';
 
 export type TaskPhase = 'prerequisites' | 'start' | 'configure' | 'connect';
@@ -105,15 +106,23 @@ export function generateSetupTasks(state: WizardState): SetupTask[] {
 
   // ── Connect ──
   const activeConns = getActiveConnections(selectedApps);
+  const autoConns = new Set(
+    getAutoConfigConnections(selectedApps).map((c) => `${c.from}-${c.to}`)
+  );
   for (const conn of activeConns) {
     const fromApp = getAppByIdWithCustom(conn.from, state.customApps);
     const toApp = getAppByIdWithCustom(conn.to, state.customApps);
     if (!fromApp || !toApp) continue;
 
+    const isAuto = autoConns.has(`${conn.from}-${conn.to}`);
     tasks.push({
       id: `connect-${conn.from}-${conn.to}`,
-      title: `Connect ${fromApp.name} to ${toApp.name}`,
-      description: conn.setupInstructions,
+      title: isAuto
+        ? `Verify ${fromApp.name} → ${toApp.name} connection`
+        : `Connect ${fromApp.name} to ${toApp.name}`,
+      description: isAuto
+        ? `Auto-configured on first startup. Verify in ${fromApp.name} settings if needed.`
+        : conn.setupInstructions,
       docUrl: fromApp.docUrl,
       order: order++,
       phase: 'connect',

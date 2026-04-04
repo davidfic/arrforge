@@ -1,6 +1,7 @@
 import type { WizardState } from '../types';
 import { getAppByIdWithCustom } from '../utils/appLookup';
 import { getActiveConnections } from '../data/connections';
+import { getAutoConfigConnections } from './configure';
 import { generateFolderGuide } from './folders';
 
 export function generateReadme(state: WizardState): string {
@@ -15,16 +16,60 @@ export function generateReadme(state: WizardState): string {
   lines.push('## Quick Start');
   lines.push('');
   lines.push('```bash');
-  lines.push('# Start all services');
   lines.push('docker compose up -d');
+  lines.push('```');
   lines.push('');
+  lines.push('That\'s it. The stack handles directory creation, app connections, and download');
+  lines.push('client setup automatically on first run.');
+  lines.push('');
+  lines.push('```bash');
   lines.push('# View logs');
   lines.push('docker compose logs -f');
+  lines.push('');
+  lines.push('# Check auto-configure results');
+  lines.push('docker compose logs auto-configure');
   lines.push('');
   lines.push('# Stop all services');
   lines.push('docker compose down');
   lines.push('```');
   lines.push('');
+
+  // What's automated
+  const autoConns = getAutoConfigConnections(state.selectedApps);
+  if (autoConns.length > 0) {
+    lines.push('## What\'s Auto-Configured');
+    lines.push('');
+    lines.push('The `auto-configure` service runs once on first startup and sets up:');
+    lines.push('');
+
+    const indexerConns = autoConns.filter((c) => c.type === 'indexer' && c.to !== 'flaresolverr');
+    const proxyConns = autoConns.filter((c) => c.to === 'flaresolverr');
+    const dlConns = autoConns.filter((c) => c.type === 'download-client');
+
+    if (proxyConns.length > 0) {
+      lines.push('- **FlareSolverr** as indexer proxy in Prowlarr');
+    }
+    for (const conn of indexerConns) {
+      const toApp = getAppByIdWithCustom(conn.to, state.customApps);
+      if (toApp) {
+        lines.push(`- **${toApp.name}** synced in Prowlarr (indexer app sync)`);
+      }
+    }
+    for (const conn of dlConns) {
+      const fromApp = getAppByIdWithCustom(conn.from, state.customApps);
+      const toApp = getAppByIdWithCustom(conn.to, state.customApps);
+      if (fromApp && toApp) {
+        lines.push(`- **${toApp.name}** as download client in ${fromApp.name}`);
+      }
+    }
+    lines.push('');
+    lines.push('If auto-configure fails (e.g. an app was slow to start), re-run it:');
+    lines.push('');
+    lines.push('```bash');
+    lines.push('docker compose restart auto-configure');
+    lines.push('```');
+    lines.push('');
+  }
 
   // Service URLs
   lines.push('## Service URLs');
@@ -47,7 +92,15 @@ export function generateReadme(state: WizardState): string {
   }
   lines.push('');
 
-  // Folder structure (generated dynamically based on selected apps)
+  // First run auth note
+  const arrApps = state.selectedApps.filter((id) => ['sonarr', 'radarr', 'lidarr', 'luminarr'].includes(id));
+  if (arrApps.length > 0) {
+    lines.push('> **First run:** Sonarr, Radarr, and Lidarr require you to create a username');
+    lines.push('> and password on first visit. This is enforced by the apps and cannot be skipped.');
+    lines.push('');
+  }
+
+  // Folder structure
   lines.push(generateFolderGuide(state));
   lines.push('');
 
@@ -66,45 +119,39 @@ export function generateReadme(state: WizardState): string {
   lines.push('Update the values in `.env` if they don\'t match.');
   lines.push('');
 
-  // Connection setup guide
-  const activeConns = getActiveConnections(state.selectedApps);
-  if (activeConns.length > 0) {
-    lines.push('## Connect Your Apps');
-    lines.push('');
-    lines.push('Your selected apps can be connected to work together. Follow these steps in order:');
-    lines.push('');
+  // Manual connection steps (only non-auto-configured connections)
+  const allConns = getActiveConnections(state.selectedApps);
+  const autoSet = new Set(autoConns.map((c) => `${c.from}-${c.to}`));
+  const manualConns = allConns.filter((c) => !autoSet.has(`${c.from}-${c.to}`));
 
-    // Group by "from" app
-    const grouped = new Map<string, typeof activeConns>();
-    for (const conn of activeConns) {
-      const existing = grouped.get(conn.from) || [];
-      existing.push(conn);
-      grouped.set(conn.from, existing);
-    }
+  if (manualConns.length > 0) {
+    lines.push('## Manual Setup');
+    lines.push('');
+    lines.push('These connections need to be configured manually in the app UIs:');
+    lines.push('');
 
     let stepNum = 1;
-    for (const [fromId, conns] of grouped) {
-      const fromApp = getAppByIdWithCustom(fromId, state.customApps);
-      if (!fromApp) continue;
-      for (const conn of conns) {
-        const toApp = getAppByIdWithCustom(conn.to, state.customApps);
-        if (!toApp) continue;
-        lines.push(`${stepNum}. **${fromApp.name} → ${toApp.name}** (${conn.label})`);
-        lines.push(`   ${conn.setupInstructions}`);
-        lines.push('');
-        stepNum++;
-      }
+    for (const conn of manualConns) {
+      const fromApp = getAppByIdWithCustom(conn.from, state.customApps);
+      const toApp = getAppByIdWithCustom(conn.to, state.customApps);
+      if (!fromApp || !toApp) continue;
+      lines.push(`${stepNum}. **${fromApp.name} → ${toApp.name}** (${conn.label})`);
+      lines.push(`   ${conn.setupInstructions}`);
+      lines.push('');
+      stepNum++;
     }
   }
 
   // Next steps
   lines.push('## Next Steps');
   lines.push('');
-  lines.push('1. Create the folder structure above');
-  lines.push('2. Run `docker compose up -d`');
-  lines.push('3. Access each service via the URLs above');
-  if (activeConns.length > 0) {
-    lines.push('4. Follow the "Connect Your Apps" guide above');
+  lines.push('1. Run `docker compose up -d`');
+  lines.push('2. Set up authentication in Sonarr/Radarr on first visit');
+  if (state.selectedApps.includes('prowlarr')) {
+    lines.push('3. Add indexers in Prowlarr (Settings > Indexers > +)');
+  }
+  if (manualConns.length > 0) {
+    lines.push(`${state.selectedApps.includes('prowlarr') ? '4' : '3'}. Follow the "Manual Setup" section above for remaining connections`);
   }
   lines.push('');
   lines.push('For detailed setup guides, see [TRaSH Guides](https://trash-guides.info/).');
