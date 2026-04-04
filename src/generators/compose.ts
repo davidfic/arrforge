@@ -44,13 +44,22 @@ export function generateCompose(state: WizardState): string {
   const allDirs = [...getRequiredDirs(state.selectedApps), ...getConfigDirs(state.selectedApps)];
   const mkdirArgs = allDirs.map((d) => `/data/${d}`).join(' ');
 
+  // Seed qBittorrent config with auth bypass for Docker subnets so *arr apps can connect without credentials
+  const needsQbSeed = state.selectedApps.includes('qbittorrent') &&
+    autoConns.some((c) => c.type === 'download-client' && c.to === 'qbittorrent');
+  const qbConfDir = '/data/config/qbittorrent/qBittorrent';
+  const qbConfPath = `${qbConfDir}/qBittorrent.conf`;
+  const qbSeed = needsQbSeed
+    ? ` && if [ ! -f ${qbConfPath} ]; then mkdir -p ${qbConfDir} && printf '[AutoRun]\\nenabled=false\\nprogram=\\n\\n[LegalNotice]\\nAccepted=true\\n\\n[Preferences]\\nConnection\\\\UPnP=false\\nConnection\\\\PortRangeMin=6881\\nDownloads\\\\SavePath=/downloads/\\nWebUI\\\\Address=*\\nWebUI\\\\ServerDomains=*\\nWebUI\\\\AuthSubnetWhitelistEnabled=true\\nWebUI\\\\AuthSubnetWhitelist=172.0.0.0/8, 10.0.0.0/8, 192.168.0.0/16\\nWebUI\\\\LocalHostAuth=false\\n' > ${qbConfPath}; fi`
+    : '';
+
   lines.push(`  init-dirs:`);
   lines.push(`    image: busybox`);
   lines.push(`    container_name: init-dirs`);
   lines.push(`    restart: "no"`);
   lines.push(`    volumes:`);
   lines.push(`      - \${BASE_PATH}:/data`);
-  lines.push(`    command: sh -c "mkdir -p ${mkdirArgs} && chown -R \${PUID}:\${PGID} /data"`);
+  lines.push(`    command: sh -c "mkdir -p ${mkdirArgs}${qbSeed} && chown -R \${PUID}:\${PGID} /data"`);
   lines.push('');
 
   for (const appId of state.selectedApps) {

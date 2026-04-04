@@ -44,8 +44,10 @@ const DL_CATEGORY: Record<string, string> = {
 export function getAutoConfigConnections(selectedApps: string[]): AppConnection[] {
   return getActiveConnections(selectedApps).filter((c) => {
     if (!AUTO_TYPES.has(c.type)) return false;
-    // Download clients require auth credentials we can't reliably obtain
-    if (c.type === 'download-client') return false;
+    // Only auto-configure torrent download clients with auth bypass (not usenet — SABnzbd/NZBGet need API keys)
+    if (c.type === 'download-client') {
+      return c.from in DOWNLOAD_CLIENT_API && c.to in DL_CLIENT_MAP;
+    }
     // Indexer connections: Prowlarr → *arr apps or Prowlarr → FlareSolverr
     if (c.type === 'indexer') {
       if (c.from !== 'prowlarr') return false;
