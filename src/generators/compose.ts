@@ -48,21 +48,8 @@ export function generateCompose(state: WizardState): string {
   const initCmds: string[] = [];
   initCmds.push(`mkdir -p ${mkdirArgs}`);
 
-  // Seed *arr app configs with auth disabled so there's no setup popup
-  const ARR_APPS_CONFIG: Record<string, { port: number; sslPort: number; branch: string; name: string }> = {
-    sonarr: { port: 8989, sslPort: 9898, branch: 'main', name: 'Sonarr' },
-    radarr: { port: 7878, sslPort: 9898, branch: 'master', name: 'Radarr' },
-    lidarr: { port: 8686, sslPort: 6868, branch: 'master', name: 'Lidarr' },
-  };
-  for (const appId of state.selectedApps) {
-    const cfg = ARR_APPS_CONFIG[appId];
-    if (!cfg) continue;
-    const confPath = `/data/config/${appId}/config.xml`;
-    const nl = '\\\\n'; // produces \\n in compose YAML, which sh+printf interprets as newline
-    initCmds.push(
-      `if [ ! -f ${confPath} ]; then printf '<Config>${nl}  <BindAddress>*</BindAddress>${nl}  <Port>${cfg.port}</Port>${nl}  <SslPort>${cfg.sslPort}</SslPort>${nl}  <EnableSsl>False</EnableSsl>${nl}  <LaunchBrowser>True</LaunchBrowser>${nl}  <AuthenticationMethod>None</AuthenticationMethod>${nl}  <Branch>${cfg.branch}</Branch>${nl}  <LogLevel>info</LogLevel>${nl}  <UrlBase></UrlBase>${nl}  <InstanceName>${cfg.name}</InstanceName>${nl}</Config>${nl}' > ${confPath}; fi`
-    );
-  }
+  // Sonarr/Radarr v4+ enforce authentication — it cannot be disabled via config.
+  // No config.xml seeding for *arr apps.
 
   // Track whether qBittorrent needs auth bypass for auto-configure
   const needsQbAuthBypass = state.selectedApps.includes('qbittorrent') &&
