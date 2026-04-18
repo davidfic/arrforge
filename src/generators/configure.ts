@@ -13,7 +13,6 @@ const AUTO_TYPES = new Set(['download-client', 'indexer']);
 const DOWNLOAD_CLIENT_API: Record<string, string> = {
   sonarr: '/api/v3/downloadclient',
   radarr: '/api/v3/downloadclient',
-  luminarr: '/api/v3/downloadclient',
   lidarr: '/api/v1/downloadclient',
 };
 
@@ -21,7 +20,6 @@ const DOWNLOAD_CLIENT_API: Record<string, string> = {
 const PROWLARR_APP_MAP: Record<string, { impl: string; contract: string; categories: number[] }> = {
   sonarr: { impl: 'Sonarr', contract: 'SonarrSettings', categories: [5000, 5010, 5020, 5030, 5040, 5045, 5050, 5090] },
   radarr: { impl: 'Radarr', contract: 'RadarrSettings', categories: [2000, 2010, 2020, 2030, 2040, 2045, 2050, 2060] },
-  luminarr: { impl: 'Radarr', contract: 'RadarrSettings', categories: [2000, 2010, 2020, 2030, 2040, 2045, 2050, 2060] },
   lidarr: { impl: 'Lidarr', contract: 'LidarrSettings', categories: [3000, 3010, 3020, 3030, 3040] },
 };
 
@@ -36,7 +34,6 @@ const DL_CLIENT_MAP: Record<string, { impl: string; contract: string; port: numb
 const DL_CATEGORY: Record<string, string> = {
   sonarr: 'tv-sonarr',
   radarr: 'radarr',
-  luminarr: 'radarr',
   lidarr: 'lidarr',
 };
 
@@ -165,7 +162,7 @@ export function generateConfigureScript(state: WizardState): string {
     const targetPort = getPort(conn.to);
     const prowlarrKey = 'PROWLARR_KEY';
     const targetKey = conn.to.toUpperCase().replace(/-/g, '_') + '_KEY';
-    const displayName = mapping.impl === 'Radarr' && conn.to === 'luminarr' ? 'Luminarr' : mapping.impl;
+    const displayName = mapping.impl;
     const categories = JSON.stringify(mapping.categories);
 
     lines.push(`# ── Prowlarr: Add ${displayName} app sync ──`);

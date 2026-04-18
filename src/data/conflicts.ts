@@ -8,9 +8,15 @@ export interface AppConflictRule {
 const conflictRules: AppConflictRule[] = [
   {
     id: 'movie-managers',
-    apps: ['radarr', 'luminarr'],
+    apps: ['radarr', 'prism'],
     severity: 'warning',
-    message: 'Radarr and Luminarr both manage movies. You probably only need one unless you\'re migrating.',
+    message: 'Radarr and Prism both manage movies. You probably only need one unless you\'re migrating.',
+  },
+  {
+    id: 'tv-managers',
+    apps: ['sonarr', 'pilot'],
+    severity: 'warning',
+    message: 'Sonarr and Pilot both manage TV series. You probably only need one unless you\'re migrating.',
   },
   {
     id: 'media-servers-je',

@@ -39,9 +39,6 @@ export const appTips: Record<string, AppTip> = {
   radarr: {
     firstRunTip: 'Go to Settings > Media Management and set your root folder to /data/media/movies.',
   },
-  luminarr: {
-    firstRunTip: 'An API key is auto-generated on first start. Find it in Settings for connecting other apps.',
-  },
   lidarr: {
     firstRunTip: 'Go to Settings > Media Management and set your root folder to /data/media/music.',
   },
@@ -50,5 +47,17 @@ export const appTips: Record<string, AppTip> = {
   },
   overseerr: {
     firstRunTip: 'Sign in with your Plex account during the setup wizard to link your media server.',
+  },
+  pulse: {
+    firstRunTip: 'Pulse is the Beacon control plane. Add indexers under Settings → Indexers — they propagate to Pilot, Prism, and Haul automatically via service registration.',
+  },
+  pilot: {
+    firstRunTip: 'Pilot registers with Pulse on startup. No download-client wiring needed — Haul is discovered via Pulse.',
+  },
+  prism: {
+    firstRunTip: 'Prism registers with Pulse on startup and is Radarr v3 API-compatible (so Overseerr/Jellyseerr and Bazarr can connect to it as if it were Radarr).',
+  },
+  haul: {
+    firstRunTip: 'Haul registers with Pulse on startup. Pilot and Prism discover it automatically — no URL/API-key wiring in those UIs.',
   },
 };

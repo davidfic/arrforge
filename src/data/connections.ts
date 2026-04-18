@@ -1,4 +1,4 @@
-export type ConnectionType = 'download-client' | 'indexer' | 'subtitle' | 'media-server' | 'request' | 'monitoring' | 'quality-profile';
+export type ConnectionType = 'download-client' | 'indexer' | 'subtitle' | 'media-server' | 'request' | 'monitoring' | 'quality-profile' | 'service-registry' | 'database';
 
 export interface AppConnection {
   from: string;
@@ -33,17 +33,6 @@ export const connections: AppConnection[] = [
   { from: 'radarr', to: 'deluge', type: 'download-client', label: 'Download Client',
     setupInstructions: 'In Radarr, go to Settings → Download Clients → + → Deluge. Host: `deluge`, Port: `8112`. Default password: `deluge`.' },
 
-  { from: 'luminarr', to: 'qbittorrent', type: 'download-client', label: 'Download Client',
-    setupInstructions: 'In Luminarr, go to Settings → Download Clients → + → qBittorrent. Host: `qbittorrent`, Port: `8080`.' },
-  { from: 'luminarr', to: 'transmission', type: 'download-client', label: 'Download Client',
-    setupInstructions: 'In Luminarr, go to Settings → Download Clients → + → Transmission. Host: `transmission`, Port: `9091`.' },
-  { from: 'luminarr', to: 'sabnzbd', type: 'download-client', label: 'Download Client (Usenet)',
-    setupInstructions: 'In Luminarr, go to Settings → Download Clients → + → SABnzbd. Host: `sabnzbd`, Port: `8080`. Add your API key.' },
-  { from: 'luminarr', to: 'nzbget', type: 'download-client', label: 'Download Client (Usenet)',
-    setupInstructions: 'In Luminarr, go to Settings → Download Clients → + → NZBGet. Host: `nzbget`, Port: `6789`.' },
-  { from: 'luminarr', to: 'deluge', type: 'download-client', label: 'Download Client',
-    setupInstructions: 'In Luminarr, go to Settings → Download Clients → + → Deluge. Host: `deluge`, Port: `8112`. Default password: `deluge`.' },
-
   { from: 'lidarr', to: 'qbittorrent', type: 'download-client', label: 'Download Client',
     setupInstructions: 'In Lidarr, go to Settings → Download Clients → + → qBittorrent. Host: `qbittorrent`, Port: `8080`.' },
   { from: 'lidarr', to: 'transmission', type: 'download-client', label: 'Download Client',
@@ -59,8 +48,6 @@ export const connections: AppConnection[] = [
     setupInstructions: 'In Prowlarr, go to Settings → Apps → + → Sonarr. Prowlarr Server: `http://prowlarr:9696`, Sonarr Server: `http://sonarr:8989`. Add the Sonarr API key.' },
   { from: 'prowlarr', to: 'radarr', type: 'indexer', label: 'App Sync',
     setupInstructions: 'In Prowlarr, go to Settings → Apps → + → Radarr. Prowlarr Server: `http://prowlarr:9696`, Radarr Server: `http://radarr:7878`. Add the Radarr API key.' },
-  { from: 'prowlarr', to: 'luminarr', type: 'indexer', label: 'App Sync',
-    setupInstructions: 'In Prowlarr, go to Settings → Apps → + → Radarr. Prowlarr Server: `http://prowlarr:9696`, Radarr Server: `http://luminarr:8282`. Add the Luminarr API key. Luminarr is Radarr API-compatible.' },
   { from: 'prowlarr', to: 'lidarr', type: 'indexer', label: 'App Sync',
     setupInstructions: 'In Prowlarr, go to Settings → Apps → + → Lidarr. Prowlarr Server: `http://prowlarr:9696`, Lidarr Server: `http://lidarr:8686`. Add the Lidarr API key.' },
 
@@ -73,8 +60,6 @@ export const connections: AppConnection[] = [
     setupInstructions: 'In Bazarr, go to Settings → Sonarr. Address: `sonarr`, Port: `8989`. Add the Sonarr API key.' },
   { from: 'bazarr', to: 'radarr', type: 'subtitle', label: 'Movie Subtitles',
     setupInstructions: 'In Bazarr, go to Settings → Radarr. Address: `radarr`, Port: `7878`. Add the Radarr API key.' },
-  { from: 'bazarr', to: 'luminarr', type: 'subtitle', label: 'Movie Subtitles',
-    setupInstructions: 'In Bazarr, go to Settings → Radarr. Address: `luminarr`, Port: `8282`. Add the Luminarr API key. Luminarr is Radarr API-compatible.' },
 
   // ── Overseerr → Plex/Sonarr/Radarr ──
   { from: 'overseerr', to: 'plex', type: 'media-server', label: 'Media Server',
@@ -83,8 +68,6 @@ export const connections: AppConnection[] = [
     setupInstructions: 'In Overseerr, go to Settings → Services → + → Sonarr. Hostname: `sonarr`, Port: `8989`. Add the Sonarr API key.' },
   { from: 'overseerr', to: 'radarr', type: 'request', label: 'Movie Requests',
     setupInstructions: 'In Overseerr, go to Settings → Services → + → Radarr. Hostname: `radarr`, Port: `7878`. Add the Radarr API key.' },
-  { from: 'overseerr', to: 'luminarr', type: 'request', label: 'Movie Requests',
-    setupInstructions: 'In Overseerr, go to Settings → Services → + → Radarr. Hostname: `luminarr`, Port: `8282`. Add the Luminarr API key. Luminarr is Radarr API-compatible.' },
 
   // ── Tautulli → Plex ──
   { from: 'tautulli', to: 'plex', type: 'monitoring', label: 'Plex Monitoring',
@@ -95,6 +78,20 @@ export const connections: AppConnection[] = [
     setupInstructions: 'Edit `recyclarr.yml` to add your Sonarr instance. Base URL: `http://sonarr:8989`, add the Sonarr API key.' },
   { from: 'recyclarr', to: 'radarr', type: 'quality-profile', label: 'Quality Profiles',
     setupInstructions: 'Edit `recyclarr.yml` to add your Radarr instance. Base URL: `http://radarr:7878`, add the Radarr API key.' },
+
+  // ── Beacon Stack: Pilot/Prism/Haul register with Pulse at startup ──
+  // These connections drive depends_on wiring in the generated compose.
+  // No manual setup — each app's Go SDK posts to Pulse's /services/register
+  // automatically on startup. The setupInstructions are informational only.
+  { from: 'pilot', to: 'pulse', type: 'service-registry', label: 'Registers with Pulse',
+    dependsOn: true,
+    setupInstructions: 'Automatic. Pilot registers with Pulse on startup via the Beacon SDK. Indexers and quality profiles configured in Pulse flow to Pilot without further setup.' },
+  { from: 'prism', to: 'pulse', type: 'service-registry', label: 'Registers with Pulse',
+    dependsOn: true,
+    setupInstructions: 'Automatic. Prism registers with Pulse on startup via the Beacon SDK. Indexers and quality profiles configured in Pulse flow to Prism without further setup.' },
+  { from: 'haul', to: 'pulse', type: 'service-registry', label: 'Registers with Pulse',
+    dependsOn: true,
+    setupInstructions: 'Automatic. Haul registers with Pulse on startup so Pilot/Prism can discover it as a download client. No UI wiring needed.' },
 ];
 
 export function getActiveConnections(selectedApps: string[]): AppConnection[] {

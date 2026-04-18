@@ -11,8 +11,8 @@ interface MediaDir {
 }
 
 const MEDIA_DIRS: MediaDir[] = [
-  { name: 'movies', label: 'Movie library', apps: ['radarr', 'luminarr'] },
-  { name: 'tv', label: 'TV show library', apps: ['sonarr'] },
+  { name: 'movies', label: 'Movie library', apps: ['radarr', 'prism'] },
+  { name: 'tv', label: 'TV show library', apps: ['sonarr', 'pilot'] },
   { name: 'music', label: 'Music library', apps: ['lidarr'] },
 ];
 

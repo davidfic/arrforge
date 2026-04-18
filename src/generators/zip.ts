@@ -1,6 +1,6 @@
 import JSZip from 'jszip';
 import type { WizardState } from '../types';
-import { generateCompose } from './compose';
+import { generateCompose, generateInitDbSql, hasBeaconApps } from './compose';
 import { generateEnv } from './env';
 import { generateReadme } from './readme';
 import { generateAdvanced } from './advanced';
@@ -64,6 +64,11 @@ export async function buildZipBlob(state: WizardState): Promise<Blob> {
       getAutoConfigConnections(state.selectedApps).some((c) => c.type === 'download-client' && c.to === 'qbittorrent');
     if (needsQbBypass) {
       folder.file('qbt-auth-bypass.sh', QBT_AUTH_BYPASS_SCRIPT);
+    }
+
+    // Postgres init script — creates a DB+user per beacon app on first start
+    if (hasBeaconApps(state.selectedApps)) {
+      folder.file('init-db.sql', generateInitDbSql());
     }
 
     if (state.includeVpnCompose) {
@@ -215,6 +220,10 @@ export async function buildTgzBlob(state: WizardState): Promise<Blob> {
       getAutoConfigConnections(state.selectedApps).some((c) => c.type === 'download-client' && c.to === 'qbittorrent');
     if (tgzNeedsQbBypass) {
       files.push({ name: prefix + 'qbt-auth-bypass.sh', content: QBT_AUTH_BYPASS_SCRIPT });
+    }
+
+    if (hasBeaconApps(state.selectedApps)) {
+      files.push({ name: prefix + 'init-db.sql', content: generateInitDbSql() });
     }
 
     if (state.includeVpnCompose) {

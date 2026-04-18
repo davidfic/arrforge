@@ -9,6 +9,12 @@ export interface PresetStack {
 
 export const presets: PresetStack[] = [
   {
+    id: 'beacon-stack',
+    name: 'The Beacon Stack',
+    description: 'Pulse + Pilot + Prism + Haul, the new Go-based alternative to the Arr suite. Ships with a shared Postgres and FlareSolverr.',
+    appIds: ['pulse', 'pilot', 'prism', 'haul', 'flaresolverr'],
+  },
+  {
     id: 'starter',
     name: 'Starter',
     description: 'The essentials for TV and movies with torrents',

@@ -16,6 +16,8 @@ const CONNECTION_COLORS: Record<ConnectionType, string> = {
   'request': '#06b6d4',
   'monitoring': '#6b7280',
   'quality-profile': '#eab308',
+  'service-registry': '#4f46e5',
+  'database': '#0ea5e9',
 };
 
 const HOST_COLORS = [

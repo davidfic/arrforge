@@ -2,6 +2,7 @@ import type { WizardState } from '../types';
 import { getAppByIdWithCustom } from '../utils/appLookup';
 import { getActiveConnections } from '../data/connections';
 import { getAutoConfigConnections } from './configure';
+import { hasBeaconApps } from './compose';
 import { generateFolderGuide } from './folders';
 
 export function generateReadme(state: WizardState): string {
@@ -22,6 +23,19 @@ export function generateReadme(state: WizardState): string {
   lines.push('That\'s it. The stack handles directory creation, app connections, and download');
   lines.push('client setup automatically on first run.');
   lines.push('');
+
+  // Beacon Stack callout — the generated compose uses weak default passwords
+  // (pulse/pulse, etc.) baked into init-db.sql. The official deploy repo
+  // rotates these automatically via an init-secrets sidecar.
+  if (hasBeaconApps(state.selectedApps)) {
+    lines.push('> **Using the Beacon Stack in production?** This wizard output uses simple');
+    lines.push('> default passwords for the Postgres users (`pulse/pulse`, `pilot/pilot`, etc.)');
+    lines.push('> baked into `init-db.sql`. For a turnkey install with per-run rotated secrets');
+    lines.push('> generated inside a Docker volume, clone [beacon-stack/deploy](https://github.com/beacon-stack/deploy)');
+    lines.push('> instead. Same stack, stronger defaults.');
+    lines.push('');
+  }
+
   lines.push('```bash');
   lines.push('# View logs');
   lines.push('docker compose logs -f');
@@ -93,7 +107,7 @@ export function generateReadme(state: WizardState): string {
   lines.push('');
 
   // First run auth note
-  const arrApps = state.selectedApps.filter((id) => ['sonarr', 'radarr', 'lidarr', 'luminarr'].includes(id));
+  const arrApps = state.selectedApps.filter((id) => ['sonarr', 'radarr', 'lidarr'].includes(id));
   if (arrApps.length > 0) {
     lines.push('> **First run:** Sonarr, Radarr, and Lidarr require you to create a username');
     lines.push('> and password on first visit. This is enforced by the apps and cannot be skipped.');

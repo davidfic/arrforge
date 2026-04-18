@@ -20,6 +20,15 @@ const PORT_CONFLICTS: { appA: string; appB: string; port: number; offset: number
   { appA: 'jellyfin', appB: 'emby', port: 8096, offset: 8097 },
 ];
 
+// Beacon Stack apps — depend on a shared Postgres + manage their own users
+// (no PUID/PGID env). Selecting any of these triggers emission of a
+// postgres service + init-db.sql mount.
+const BEACON_APPS = new Set(['pulse', 'pilot', 'prism', 'haul']);
+
+export function hasBeaconApps(selectedApps: string[]): boolean {
+  return selectedApps.some((id) => BEACON_APPS.has(id));
+}
+
 export function getPortOverrides(selectedApps: string[]): Record<string, { overrides: Record<number, number>; conflictWith: string }> {
   const result: Record<string, { overrides: Record<number, number>; conflictWith: string }> = {};
   for (const { appA, appB, port, offset } of PORT_CONFLICTS) {
@@ -100,6 +109,13 @@ export function generateCompose(state: WizardState): string {
     lines.push(`    depends_on:`);
     lines.push(`      init-dirs:`);
     lines.push(`        condition: service_completed_successfully`);
+    // Beacon apps depend on the shared Postgres (not an AppDefinition, so
+    // wire it here). The postgres service is emitted after the service loop
+    // below when any beacon app is selected.
+    if (BEACON_APPS.has(app.id)) {
+      lines.push(`      postgres:`);
+      lines.push(`        condition: service_healthy`);
+    }
     for (const dep of deps) {
       const depApp = getAppByIdWithCustom(dep.to, state.customApps);
       const depConfig = state.appConfigs[dep.to];
@@ -134,10 +150,17 @@ export function generateCompose(state: WizardState): string {
       envLines.length = 0;
       envLines.push(`      - TZ=\${TZ}`);
     }
-    // luminarr manages its own user — only needs TZ
-    if (app.id === 'luminarr') {
+    // Beacon apps manage their own container user — drop PUID/PGID defaults
+    // but keep the app's own env + TZ. Ordering matters here: clear the
+    // PUID/PGID block first, then re-emit TZ + the app's specific env vars.
+    if (BEACON_APPS.has(app.id)) {
       envLines.length = 0;
       envLines.push(`      - TZ=\${TZ}`);
+      if (app.env) {
+        for (const [key, val] of Object.entries(app.env)) {
+          envLines.push(`      - ${key}=${val}`);
+        }
+      }
     }
 
     // Append custom env vars from per-app config
@@ -215,6 +238,32 @@ export function generateCompose(state: WizardState): string {
     lines.push('');
   }
 
+  // Beacon Stack: shared Postgres service + init script that creates one
+  // database and user per beacon app. Auto-emitted whenever any beacon app
+  // is selected, even though postgres isn't itself an AppDefinition in
+  // apps.ts (it's infrastructure, not a user-pickable service).
+  const beaconAppsSelected = state.selectedApps.filter((id) => BEACON_APPS.has(id));
+  if (beaconAppsSelected.length > 0) {
+    lines.push(`  postgres:`);
+    lines.push(`    image: postgres:17-alpine`);
+    lines.push(`    container_name: postgres`);
+    lines.push(`    restart: unless-stopped`);
+    lines.push(`    environment:`);
+    lines.push(`      - POSTGRES_PASSWORD=beacon`);
+    lines.push(`      - TZ=\${TZ}`);
+    lines.push(`    volumes:`);
+    lines.push(`      - pgdata:/var/lib/postgresql/data`);
+    lines.push(`      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro`);
+    lines.push(`    healthcheck:`);
+    lines.push(`      test: ["CMD-SHELL", "pg_isready -U postgres"]`);
+    lines.push(`      interval: 10s`);
+    lines.push(`      timeout: 5s`);
+    lines.push(`      retries: 5`);
+    lines.push(`      start_period: 30s`);
+    lines.push('');
+    networkApps.push('postgres');
+  }
+
   // Auto-configure service: wires connections between apps via their APIs
   if (autoConns.length > 0) {
     // Collect unique apps involved in auto-configurable connections
@@ -287,8 +336,52 @@ export function generateCompose(state: WizardState): string {
     finalLines.push(`    driver: bridge`);
     finalLines.push('');
 
+    // Named volume for Postgres when beacon apps are in the stack.
+    if (hasBeaconApps(state.selectedApps)) {
+      finalLines.push(`volumes:`);
+      finalLines.push(`  pgdata:`);
+      finalLines.push('');
+    }
+
     return finalLines.join('\n');
   }
 
+  // No shared network (all services use host networking, unlikely).
+  // Still emit the volumes block if beacon apps pulled postgres in.
+  if (hasBeaconApps(state.selectedApps)) {
+    lines.push(`volumes:`);
+    lines.push(`  pgdata:`);
+    lines.push('');
+  }
+
   return lines.join('\n');
+}
+
+// init-db.sql content — creates one Postgres user + database per beacon app,
+// with passwords matching the app's DATABASE_DSN env var (the
+// pulse/pulse, pilot/pilot, etc. pattern). For the turnkey rotated-secrets
+// setup, see https://github.com/beacon-stack/deploy.
+export function generateInitDbSql(): string {
+  return [
+    '-- Beacon Stack — Postgres initialization',
+    '-- Runs once on first Postgres startup (empty pgdata volume).',
+    '-- For rotated per-app passwords on a production deploy, use the init-',
+    '-- secrets sidecar from https://github.com/beacon-stack/deploy instead.',
+    '',
+    "CREATE USER pulse WITH PASSWORD 'pulse';",
+    "CREATE USER pilot WITH PASSWORD 'pilot';",
+    "CREATE USER prism WITH PASSWORD 'prism';",
+    "CREATE USER haul  WITH PASSWORD 'haul';",
+    '',
+    'CREATE DATABASE pulse_db OWNER pulse;',
+    'CREATE DATABASE pilot_db OWNER pilot;',
+    'CREATE DATABASE prism_db OWNER prism;',
+    'CREATE DATABASE haul_db  OWNER haul;',
+    '',
+    'GRANT ALL PRIVILEGES ON DATABASE pulse_db TO pulse;',
+    'GRANT ALL PRIVILEGES ON DATABASE pilot_db TO pilot;',
+    'GRANT ALL PRIVILEGES ON DATABASE prism_db TO prism;',
+    'GRANT ALL PRIVILEGES ON DATABASE haul_db  TO haul;',
+    '',
+  ].join('\n');
 }
