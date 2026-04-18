@@ -39,6 +39,13 @@ export function SelectAppsStep({ state, dispatch }: SelectAppsStepProps) {
         </p>
       </div>
 
+      {state.presetTip && (
+        <div className="mb-6 p-3 rounded-lg border-l-4 border-theme-accent bg-theme-bg-surface text-sm text-theme-text-secondary">
+          <span className="block text-xs font-medium uppercase tracking-wide text-theme-accent-text mb-1">Tip</span>
+          <span>{state.presetTip}</span>
+        </div>
+      )}
+
       {visibleConflicts.length > 0 && (
         <div className="space-y-2 mb-6">
           {visibleConflicts.map((conflict) => (

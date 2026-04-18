@@ -44,7 +44,7 @@ function reducer(state: WizardState, action: WizardAction): WizardState {
       return { ...state, selectedApps: selected };
     }
     case 'SET_APPS':
-      return { ...state, selectedApps: action.appIds };
+      return { ...state, selectedApps: action.appIds, presetTip: action.tip };
     case 'SET_OS': {
       const basePath = action.os === 'macos' ? '~/data' : './data';
       return { ...state, os: action.os, basePath };

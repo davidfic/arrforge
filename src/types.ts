@@ -80,13 +80,16 @@ export interface WizardState {
   multiHost: boolean;
   hosts: HostDefinition[];
   hostAssignments: Record<string, string>; // appId -> hostId
+  /** Tip text from the preset/gallery card the user chose. Rendered on
+   *  SelectAppsStep; cleared on RESET. */
+  presetTip?: string;
 }
 
 export type WizardAction =
   | { type: 'SET_STEP'; step: number }
   | { type: 'TOGGLE_ADVANCED' }
   | { type: 'TOGGLE_APP'; appId: string }
-  | { type: 'SET_APPS'; appIds: string[] }
+  | { type: 'SET_APPS'; appIds: string[]; tip?: string }
   | { type: 'SET_OS'; os: 'linux' | 'macos' }
   | { type: 'SET_BASE_PATH'; path: string }
   | { type: 'SET_PUID'; puid: string }

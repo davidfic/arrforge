@@ -22,7 +22,7 @@ export function StackGallery({ dispatch, onClose }: StackGalleryProps) {
     : galleryStacks;
 
   const handleUseStack = (stack: GalleryStack) => {
-    dispatch({ type: 'SET_APPS', appIds: stack.appIds });
+    dispatch({ type: 'SET_APPS', appIds: stack.appIds, tip: stack.tip });
     if (stack.config) {
       dispatch({ type: 'IMPORT_STATE', state: stack.config as any });
     }
@@ -92,11 +92,6 @@ export function StackGallery({ dispatch, onClose }: StackGalleryProps) {
                   </span>
                 </div>
                 <p className="text-sm text-theme-text-muted mb-3">{stack.description}</p>
-                {stack.tip && (
-                  <p className="text-xs text-theme-text-muted italic mb-3 pl-2 border-l-2 border-theme-border-subtle">
-                    {stack.tip}
-                  </p>
-                )}
                 <div className="flex flex-wrap gap-1 mb-3">
                   {getGalleryAppNames(stack).map((name) => (
                     <span
