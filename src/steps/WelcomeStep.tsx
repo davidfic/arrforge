@@ -37,6 +37,11 @@ export function WelcomeStep({ dispatch, onOpenGallery }: WelcomeStepProps) {
           >
             <h3 className="font-semibold text-theme-text-primary mb-1">{preset.name}</h3>
             <p className="text-sm text-theme-text-muted mb-3">{preset.description}</p>
+            {preset.tip && (
+              <p className="text-xs text-theme-text-muted italic mb-3 pl-2 border-l-2 border-theme-border-subtle">
+                {preset.tip}
+              </p>
+            )}
             <div className="flex flex-wrap gap-1.5">
               {getPresetAppNames(preset).map((name) => (
                 <span

@@ -92,6 +92,11 @@ export function StackGallery({ dispatch, onClose }: StackGalleryProps) {
                   </span>
                 </div>
                 <p className="text-sm text-theme-text-muted mb-3">{stack.description}</p>
+                {stack.tip && (
+                  <p className="text-xs text-theme-text-muted italic mb-3 pl-2 border-l-2 border-theme-border-subtle">
+                    {stack.tip}
+                  </p>
+                )}
                 <div className="flex flex-wrap gap-1 mb-3">
                   {getGalleryAppNames(stack).map((name) => (
                     <span

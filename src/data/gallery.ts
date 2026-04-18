@@ -9,6 +9,9 @@ export interface GalleryStack {
   appIds: string[];
   config?: Partial<WizardState>;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
+  /** Short hint shown below the description — compatibility notes,
+   *  follow-ups the user might want to add, gotchas. */
+  tip?: string;
 }
 
 export const galleryStacks: GalleryStack[] = [
@@ -19,6 +22,7 @@ export const galleryStacks: GalleryStack[] = [
     tags: ['minimal', 'torrents', 'starter'],
     appIds: ['sonarr', 'radarr', 'prowlarr', 'flaresolverr', 'qbittorrent'],
     difficulty: 'beginner',
+    tip: 'No media server included — copy files to your device or add Plex/Jellyfin once the downloader is working.',
   },
   {
     id: 'usenet-power-user',
@@ -27,6 +31,7 @@ export const galleryStacks: GalleryStack[] = [
     tags: ['usenet', 'automation', 'subtitles'],
     appIds: ['sonarr', 'radarr', 'lidarr', 'prowlarr', 'sabnzbd', 'recyclarr', 'bazarr'],
     difficulty: 'intermediate',
+    tip: 'Recyclarr needs a recyclarr.yml you provide. Bazarr needs a subtitle-provider account (OpenSubtitles, Subscene, etc.).',
   },
   {
     id: 'plex-empire',
@@ -35,6 +40,7 @@ export const galleryStacks: GalleryStack[] = [
     tags: ['plex', 'automation', 'requests', 'monitoring'],
     appIds: ['sonarr', 'radarr', 'prowlarr', 'flaresolverr', 'qbittorrent', 'plex', 'overseerr', 'tautulli', 'bazarr', 'recyclarr'],
     difficulty: 'advanced',
+    tip: 'Grab a Plex claim token before starting — it expires in 4 minutes. Set PLEX_CLAIM in your .env on first run.',
   },
   {
     id: 'jellyfin-free-stack',
@@ -43,6 +49,7 @@ export const galleryStacks: GalleryStack[] = [
     tags: ['jellyfin', 'open-source', 'torrents'],
     appIds: ['sonarr', 'radarr', 'prowlarr', 'flaresolverr', 'qbittorrent', 'jellyfin', 'bazarr'],
     difficulty: 'beginner',
+    tip: 'Overseerr supports Jellyfin if you want request management later.',
   },
   {
     id: 'privacy-first',
@@ -52,6 +59,7 @@ export const galleryStacks: GalleryStack[] = [
     appIds: ['sonarr', 'radarr', 'prowlarr', 'flaresolverr', 'qbittorrent'],
     config: { includeVpnCompose: true },
     difficulty: 'intermediate',
+    tip: 'You supply the VPN credentials. Gluetun supports 30+ providers — PIA, Mullvad, NordVPN, ProtonVPN, Surfshark, and more.',
   },
   {
     id: 'music-collector',
@@ -60,6 +68,7 @@ export const galleryStacks: GalleryStack[] = [
     tags: ['music', 'minimal'],
     appIds: ['lidarr', 'prowlarr', 'flaresolverr', 'qbittorrent'],
     difficulty: 'beginner',
+    tip: 'Music indexers are mostly private trackers (Redacted, Orpheus, JPopSuki). You\'ll need existing accounts to add them in Prowlarr.',
   },
   {
     id: 'beacon-stack-plus',
@@ -68,6 +77,7 @@ export const galleryStacks: GalleryStack[] = [
     tags: ['beacon', 'plex', 'requests'],
     appIds: ['pulse', 'pilot', 'prism', 'haul', 'flaresolverr', 'plex', 'overseerr'],
     difficulty: 'intermediate',
+    tip: 'Overseerr connects to Prism as if it were Radarr (same API). For a turnkey beacon install with rotated secrets, see beacon-stack/deploy.',
   },
   {
     id: 'beacon-stack-jellyfin',
@@ -76,6 +86,7 @@ export const galleryStacks: GalleryStack[] = [
     tags: ['beacon', 'jellyfin', 'open-source'],
     appIds: ['pulse', 'pilot', 'prism', 'haul', 'flaresolverr', 'jellyfin'],
     difficulty: 'intermediate',
+    tip: 'Fully open-source top to bottom. For turnkey beacon install with rotated secrets, see beacon-stack/deploy.',
   },
   {
     id: 'hybrid-downloader',
@@ -84,6 +95,7 @@ export const galleryStacks: GalleryStack[] = [
     tags: ['torrents', 'usenet', 'hybrid'],
     appIds: ['sonarr', 'radarr', 'prowlarr', 'flaresolverr', 'qbittorrent', 'sabnzbd'],
     difficulty: 'intermediate',
+    tip: 'Port 8080 collides between qBittorrent and SABnzbd — the wizard auto-remaps SABnzbd to 8081.',
   },
   {
     id: 'everything',
@@ -92,6 +104,7 @@ export const galleryStacks: GalleryStack[] = [
     tags: ['complete', 'advanced'],
     appIds: ['sonarr', 'radarr', 'lidarr', 'bazarr', 'prowlarr', 'flaresolverr', 'qbittorrent', 'sabnzbd', 'plex', 'overseerr', 'tautulli', 'recyclarr', 'nginx-proxy-manager'],
     difficulty: 'advanced',
+    tip: 'Thirteen services and ~4 GB of RAM. NPM lets you front the web UIs with real TLS; Tautulli watches playback stats.',
   },
 ];
 
